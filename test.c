@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/08 11:02:56 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/08 17:31:40 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -552,19 +552,22 @@ static void	test_strcpy(void)
 
 static void	test_strdup(void)
 {
-	int		test[2], ctrl[2];
+	int		test[3], ctrl[3];
 	char	*dst, src[]="test string";
 
-	init(ctrl, 2, 0);
+	init(ctrl, 3, 0);
+	init(test, 3, 1);
 	dst = ft_strdup(src);
 	test[0] = strcmp(src, dst);
-	if (dst[strlen(src)])
-		test[1] = 1;
-	else
+	if (!dst[strlen(src)])
 		test[1] = 0;
 	free(dst);
+	dst = ft_strdup("");
+	if (dst && !(*dst))
+		test[2] = 0;
+	free(dst);
 	print_test_name("strdup");
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 3);
 }
 
 static void	test_strlcat(void)
@@ -855,7 +858,8 @@ int			main(void)
 	test_strstr();
 	test_tolower();
 	test_toupper();
-	printf("If all you see is green, bear in mind this doesn't mean your functions are correct.\nIt means I was not able to figure out what was wrong.\n");
+	printf("If all you see is green, bear in mind this doesn't mean your functions are correct. It means I was not able to figure out what was wrong.\n");
+	printf("You are therefore strongly advised to try out the other tests available out there.\n");
 	set(MAGENTA);
 	printf("Love and kisses, Zaphod.\n");
 	set(UNCOLOR);
