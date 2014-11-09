@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 18:06:59 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 19:41:37 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 
 #define RESET	"\e[0m"
 #define BOLD	"\e[1m"
@@ -388,6 +389,44 @@ static void	test_isprint(void)
 		++i;
 	}
 	print_test_results_summary(test, ctrl, 1024);
+}
+
+static void	test_itoa(void)
+{
+	int		test[7], ctrl[7];
+	char	str1[21], *str2;
+
+	print_test_name("itoa");
+	init(ctrl, 5, 0);
+	init(test, 5, 1);
+	snprintf(str1, 21, "%d", 0);
+	str2 = ft_itoa(0);
+	test[0] = strcmp(str1, str2);
+	free(str2);
+	snprintf(str1, 21, "%d", 123);
+	str2 = ft_itoa(123);
+	test[1] = strcmp(str1, str2);
+	free(str2);
+	snprintf(str1, 21, "%d", -123);
+	str2 = ft_itoa(-123);
+	test[2] = strcmp(str1, str2);
+	free(str2);
+	snprintf(str1, 21, "%d", -9810);
+	str2 = ft_itoa(-9810);
+	test[3] = strcmp(str1, str2);
+	free(str2);
+	snprintf(str1, 21, "%d", 189);
+	str2 = ft_itoa(189);
+	test[4] = strcmp(str1, str2);
+	free(str2);
+	snprintf(str1, 21, "%d", INT_MAX);
+	str2 = ft_itoa(INT_MAX);
+	test[5] = strcmp(str1, str2);
+	free(str2);
+	snprintf(str1, 21, "%d", INT_MIN);
+	str2 = ft_itoa(INT_MIN);
+	test[6] = strcmp(str1, str2);
+	print_test_results(test, ctrl, 7, NULL);
 }
 
 static void	test_memalloc(void)
@@ -1378,6 +1417,7 @@ int			main(void)
 	test_isascii();
 	test_isdigit();
 	test_isprint();
+	test_itoa();
 	test_memalloc();
 	test_memccpy();
 	test_memchr();
