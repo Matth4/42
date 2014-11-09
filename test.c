@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 22:01:20 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 23:50:16 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ static void print_test_name(char *str)
 		printf(":\t");
 	else
 		printf(":\t\t");
+	fflush(stdout);
 }
 
 static void	print_test_results(int	return_value[], int control_value[], int n, int warning[])
@@ -548,7 +549,6 @@ static void	test_memdel(void)
 
 	print_test_name("memdel");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ptr = NULL;
 	ft_memdel(NULL);
 	ft_memdel(&ptr);
@@ -644,7 +644,6 @@ static void	test_strclr(void)
 
 	print_test_name("strclr");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ft_strclr(NULL);
 #endif
 	init(ctrl, 2, 0);
@@ -731,7 +730,6 @@ static void	test_strdel(void)
 
 	print_test_name("strdel");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	str = NULL;
 	ft_strdel(NULL);
 	ft_strdel(&str);
@@ -776,7 +774,6 @@ static void	test_strequ(void)
 
 	print_test_name("strequ");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ctrl[9] = 0;
 	ctrl[10] = 0;
 	ctrl[11] = 0;
@@ -817,7 +814,6 @@ static void	test_striter(void)
 
 	print_test_name("striter");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ft_striter(NULL, NULL);
 	ft_striter("test", NULL);
 	ft_striter("", NULL);
@@ -838,7 +834,6 @@ static void	test_striteri(void)
 
 	print_test_name("striteri");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ft_striteri(NULL, NULL);
 	ft_striteri("test", NULL);
 	ft_striteri("", NULL);
@@ -861,7 +856,6 @@ static void	test_strjoin(void)
 	init(ctrl, 8, 0);
 	init(test, 8, 1);
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	str = ft_strjoin(NULL, NULL);
 	if (!str)
 		test[5] = 0;
@@ -961,7 +955,6 @@ static void	test_strmap(void)
 	init(ctrl, 8, 0);
 	init(test, 8, 1);
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	if (!ft_strmap(NULL, NULL))
 		test[4] = 0;
 	if (!ft_strmap("test", NULL))
@@ -995,7 +988,6 @@ static void	test_strmapi(void)
 	init(ctrl, 8, 0);
 	init(test, 8, 1);
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	if (!ft_strmapi(NULL, NULL))
 		test[4] = 0;
 	if (!ft_strmapi("test", NULL))
@@ -1115,7 +1107,6 @@ static void	test_strnequ(void)
 
 	print_test_name("strnequ");
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ctrl[13] = 0;
 	ctrl[14] = 0;
 	ctrl[15] = 0;
@@ -1246,7 +1237,6 @@ static void	test_strrchr(void)
 /* 	print_test_name("strsplit"); */
 /* 	init(ctrl, 3, 0); */
 /* #ifdef SEGFAULT_ME */
-/* 	fflush(stdout); */
 /* 	test[2] = 1; */
 /* 	tab = ft_strsplit(NULL, '*'); */
 /* 	if (!tab) */
@@ -1293,14 +1283,13 @@ static void	test_strstr(void)
 
 static void	test_strsub(void)
 {
-	int		test[9], ctrl[9], warning[]={7, 8, -1};
+	int		test[9], ctrl[9], warning[]={5, 6, 7, 8, -1};
 	char	src[]="test", *dst;
 
 	print_test_name("strsub");
 	init(ctrl, 9, 0);
 	init(test, 9, 1);
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	ft_strsub(NULL, 0, 5);
 	ft_strsub(NULL, 5, 5);
 	free(ft_strsub("test", 0, 0));
@@ -1313,23 +1302,31 @@ static void	test_strsub(void)
 	free(dst);
 	test[2] = strcmp("t s", ft_strsub("test string", 3, 3));
 	test[3] = strcmp("g", ft_strsub("test string", 10, 1));
-	test[4] = strcmp("g", ft_strsub("test string", 10, 2));
-	test[5] = strcmp("g", ft_strsub("g", 0, 1));
-	test[6] = strcmp("g", ft_strsub("g", 0, 2));
+	test[4] = strcmp("g", ft_strsub("g", 0, 1));
 	/* You're encourage to test this one more thouroughly but  */
-	/* since behaviour i undefined when start and size do not */
+	/* since behaviour is undefined when start and size do not */
 	/* point to a valid string, I can't force one on you.      */
 	/* For example, I could suggest something in the likes of: */
 	/* return (NULL) if (size == 0 OR src[start] == '\0')      */
 	/* The following test are for this sort of implementation  */
 	/* Just ignore them if you would have your ft_strsub       */
 	/* behave differently (for example return "\0")            */
+	dst = ft_strsub("test string", 10, 2);
+	if (dst)
+		test[5] = strcmp("g", dst);
+	free(dst);
+	dst = ft_strsub("g", 0, 2);
+	if (dst)
+		test[6] = strcmp("g", dst);
+	free(dst);
 	dst = ft_strsub("", 0, 1);
 	if (!dst)
 		test[7] = 0;
+	free(dst);
 	dst = ft_strsub("g", 0, 0);
 	if (!dst)
 		test[8] = 0;
+	free(dst);
 	print_test_results(test, ctrl, 9, warning);
 }
 
@@ -1341,7 +1338,6 @@ static void	test_strtrim(void)
 	print_test_name("strtrim");
 	init(ctrl, 17, 0);
 #ifdef SEGFAULT_ME
-	fflush(stdout);
 	test[16] = 1;
 	dst = ft_strtrim(NULL);
 	if (!dst)
