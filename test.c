@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 20:24:08 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 22:01:20 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1482,7 +1482,7 @@ int			main(void)
 	printf("You are therefore strongly advised to try out the other tests available out there.\n");
 	printf(MAGENTA"Love and kisses, Zaphod."UNCOLOR"\n");
 	printf(YELLOW"disagreed"UNCOLOR" results mean the function did not behave like expected but it is not necessarily a fail (I leave that judgement up to you). See comments in the code for more details.\n");
-	printf(YELLOW"disagreed"UNCOLOR" signifie que la fonction ne s'est pas comporté comme prévu, mais que cela n'est pas forcément un fail (c'est à vous de décider). Référez vous aux commentaires dans le code pour plus de détails.\n");
+	printf(YELLOW"disagreed"UNCOLOR" signifie que la fonction ne s'est pas comportée comme prévu, mais que cela n'est pas forcément un fail (c'est à vous de décider). Référez vous aux commentaires dans le code pour plus de détails.\n");
 	printf(RED"WARNING:"UNCOLOR" If you're using this test for correction/gradation purposes, __please__ check out the code for the tests that failed before sacking another student, and try to understand why they failed. I could have made a mistake, or her/his functions could behave unlike mine, yet still be in accordance with the instructions (this is mostly true for the additional functions). This program is not here to correct in your stead.\n");
 	printf(RED"ATTENTION:"UNCOLOR" Si vous utilisez ce test pour corriger un autre élève, __s'il_vous_plait__ vérifiez le code des tests qui ont échoué avant de la/le saquer, et essayerz de comprendre d'où vient le problème. J'ai pu faire une erreur, ou ses fonctions pourraient avoir un comportement différent des miennes, tout en restant en accord avec les instructions (ceci est valable principalement pour les fonctions supplémentaires). Ce programme n'est pas là pour faire la correction à votre place.\n");
 	return (0);
