@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 19:41:37 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 20:24:08 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -666,6 +666,18 @@ static void	test_strcmp(void)
 {
 	int		test[9], ctrl[9];
 
+	/*                  /!\ strcmp and strncmp                               */
+	/* ********************************************************************* */
+	/* Only the sign of the values returned by strcmp and strncmp matters !! */
+	/* ********************************************************************* */
+	/* If you make your own tests or use them in your programs, depending on */
+	/* the code written, gcc will sometimes make optimizations resulting in  */
+	/* strcmp and strncmp returning -1, 0, or 1, instead of the exact        */
+	/* difference between the values of the unsigned chars, as you've been   */
+	/* led to expect. Your own ft_ versions won't do such a thing though and */
+	/* you will get a false fail if you're not cautious.                     */
+	
+	/* This test takes only the sign into account. */
 	print_test_name("strcmp");
 	ctrl[0] = strcmp("test string", "test string");
 	ctrl[1] = strcmp("test string", "test spring");
@@ -1034,6 +1046,18 @@ static void	test_strncmp(void)
 {
 	int		test[13], ctrl[13];
 
+	/*                  /!\ strcmp and strncmp                               */
+	/* ********************************************************************* */
+	/* Only the sign of the values returned by strcmp and strncmp matters !! */
+	/* ********************************************************************* */
+	/* If you make your own tests or use them in your programs, depending on */
+	/* the code written, gcc will sometimes make optimizations resulting in  */
+	/* strcmp and strncmp returning -1, 0, or 1, instead of the exact        */
+	/* difference between the values of the unsigned chars, as you've been   */
+	/* led to expect. Your own ft_ versions won't do such a thing though and */
+	/* you will get a false fail if you're not cautious.                     */
+	
+	/* This test takes only the sign into account. */
 	print_test_name("strncmp");
 	ctrl[0] = strncmp("test string", "test string", 0);
 	ctrl[1] = strncmp("test string", "test string", 30);
