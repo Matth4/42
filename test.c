@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 02:08:57 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 14:29:25 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@
 
 /* Comment out to remove the NULL tests */
 #define SEGFAULT_ME
+/* If the test segfaults, try skipping the NULL tests */
+/* to see if they are the ones giving you a hard time */
 
 static void	f_iter(char *pc)
 {
@@ -1111,6 +1113,39 @@ static void	test_strstr(void)
 	print_test_results(test, ctrl, 6);
 }
 
+static void	test_strsub(void)
+{
+	int		test[7], ctrl[7];
+	char	src[]="test", *dst;
+
+	print_test_name("strsub");
+	init(ctrl, 5, 0);
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ft_strsub(NULL, 0, 5);
+	ft_strsub(NULL, 5, 5);
+	free(ft_strsub("test", 0, 0));
+	free(ft_strsub("test", 0, 10000000));
+#endif
+	dst = ft_strsub(src, 0, strlen(src));
+	test[0] = 1;
+	if (dst < src || dst > src + strlen(src))
+		test[0] = 0;
+	test[1] = strcmp(src, dst);
+	free(dst);
+	test[2] = strcmp("t s", ft_strsub("test string", 3, 3));
+	test[3] = strcmp("g", ft_strsub("test string", 10, 1));
+	test[4] = strcmp("g", ft_strsub("test string", 10, 2));
+	test[5] = strcmp("g", ft_strsub("g", 0, 1));
+	test[6] = strcmp("g", ft_strsub("g", 0, 2));
+	print_test_results(test, ctrl, 7);
+	/* You're encourage to test this one more thouroughly but  */
+	/* since behaviour si undefined when start and size do not */
+	/* point to a valid string, I can't force one on you.      */
+	/* However I would suggest something in the likes of:      */
+	/* return (NULL) if (size == 0 OR src[start] == '\0')      */
+}
+
 static void	test_tolower(void)
 {
 	int		i, test[1024], ctrl[1024];
@@ -1180,6 +1215,7 @@ int			main(void)
 	test_strnstr();
 	test_strrchr();
 	test_strstr();
+	test_strsub();
 	test_tolower();
 	test_toupper();
 	printf("If all you see is green, bear in mind this doesn't mean your functions are correct. It means I was not able to figure out what was wrong.\n");
