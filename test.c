@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 14:29:25 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 14:54:45 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -763,6 +763,49 @@ static void	test_striteri(void)
 	print_test_results(test, ctrl, 2);
 }
 
+static void	test_strjoin(void)
+{
+	int		test[8], ctrl[8];
+	char	*str;
+
+	print_test_name("strjoin");
+	init(ctrl, 8, 0);
+#ifdef SEGFAULT_ME
+	str = ft_strjoin(NULL, NULL);
+	test[5] = 1;
+	if (!str)
+		test[5] = 0;
+	free(str);
+	/* Tests 2 and 3 are a personnal opinion          */
+	/* on what the behavior of strjoin should be when */
+	/* one of the pointers is NULL. Some will argue   */
+	/* that we should return NULL in such a case.     */
+	/* I chose to return a copy of the non NUL string */
+	str = ft_strjoin(NULL, "test");
+	test[6] = strcmp("test", str);
+	free(str);
+	str = ft_strjoin("test", NULL);
+	test[7] = strcmp("test", str);
+	free(str);
+#endif
+	str = ft_strjoin("test", "string");
+	test[0] = strcmp("teststring", str);
+	free(str);
+	str = ft_strjoin("O", "K");
+	test[1] = strcmp("OK", str);
+	free(str);
+	str = ft_strjoin("test", "");
+	test[2] = strcmp("test", str);
+	free(str);
+	str = ft_strjoin("", "test");
+	test[3] = strcmp("test", str);
+	free(str);
+	str = ft_strjoin("", "");
+	test[4] = strcmp("", str);
+	free(str);
+	print_test_results(test, ctrl, 8);
+}
+
 static void	test_strlcat(void)
 {
 	size_t	n;
@@ -1203,6 +1246,7 @@ int			main(void)
 	test_strequ();
 	test_striter();
 	test_striteri();
+	test_strjoin();
 	test_strlcat();
 	test_strlen();
 	test_strmap();
