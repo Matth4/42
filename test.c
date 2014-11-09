@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 15:22:49 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 18:06:59 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,42 +32,11 @@
 /* If the test segfaults, try skipping the NULL tests */
 /* to see if they are the ones giving you a hard time */
 
-static void	f_iter(char *pc)
-{
-	++(*pc);
-}
-
-static void	f_iteri(unsigned int i, char *pc)
-{
-	*pc += i;
-}
-
-static char	f_map(char c)
-{
-	return (++c);
-}
-
-static char	f_mapi(unsigned int i, char c)
-{
-	return (c + i);
-}
-
 static void	set(char *color_code)
 {
 	printf(color_code);
 }
 
-static void init(int tab[], int n, int c)
-{
-	int		i;
-
-	i = 0;
-	while (i < n)
-	{
-		tab[i] = c;
-		++i;
-	}
-}
 static void print_test_name(char *str)
 {
 	set(BLUE);
@@ -80,9 +49,9 @@ static void print_test_name(char *str)
 		printf(":\t\t");
 }
 
-static void	print_test_results(int	return_value[], int control_value[], int n)
+static void	print_test_results(int	return_value[], int control_value[], int n, int warning[])
 {
-	int		i;
+	int		i, j;
 
 	if (n)
 	{
@@ -100,12 +69,33 @@ static void	print_test_results(int	return_value[], int control_value[], int n)
 			}
 			else
 			{
-				set(RED);
-				printf(" failed");
-				set(UNCOLOR);
-				printf(" [ctrl=%d, test=%d]", control_value[i], return_value[i]);
-				if (i != n - 1)
-					printf(", ");
+				j = -1;
+				if (warning)
+				{
+					j = 0;
+					while (warning[j] != -1 && warning[j] != i)
+						++j;
+					if (warning[j] != i)
+						j = -1;
+				}
+				if (j == -1)
+				{
+					set(RED);
+					printf(" failed");
+					set(UNCOLOR);
+					printf(" [ctrl=%d, test=%d]", control_value[i], return_value[i]);
+					if (i != n - 1)
+						printf(", ");
+				}
+				else
+				{
+					set(YELLOW);
+					printf(" disagreed");
+					set(UNCOLOR);
+					printf(" [ctrl=%d, test=%d]", control_value[i], return_value[i]);
+					if (i != n - 1)
+						printf(", ");
+				}
 			}
 			++i;
 		}
@@ -157,6 +147,38 @@ static void	print_test_results_summary(int	return_value[], int control_value[], 
 	}
 }
 
+static void	f_iter(char *pc)
+{
+	++(*pc);
+}
+
+static void	f_iteri(unsigned int i, char *pc)
+{
+	*pc += i;
+}
+
+static char	f_map(char c)
+{
+	return (++c);
+}
+
+static char	f_mapi(unsigned int i, char c)
+{
+	return (c + i);
+}
+
+static void init(int tab[], int n, int c)
+{
+	int		i;
+
+	i = 0;
+	while (i < n)
+	{
+		tab[i] = c;
+		++i;
+	}
+}
+
 static void	test_sign(int test[], int ctrl[], int n)
 {
 	int		i;
@@ -181,6 +203,22 @@ static void	test_negate(int ctrl[], int n)
 		++i;
 	}
 }
+
+static void	free_tab(char **tab)
+{
+	if (tab)
+	{
+		while (*tab)
+			free(*(tab++));
+		free(tab);
+	}
+}
+
+/*******************************************************************************/
+/*                                                                             */
+/*                            TEST FUNCTIONS                                   */
+/*                                                                             */
+/*******************************************************************************/
 
 static void	test_atoi(void)
 {
@@ -274,7 +312,7 @@ static void	test_bzero(void)
 		++(ctrl[1]);
 	while (!(str4[test[1]]))
 		++(test[1]);
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_isalnum(void)
@@ -373,7 +411,7 @@ static void	test_memalloc(void)
 	if (!(ptr = ft_memalloc(SIZE_MAX - 1)))
 		test[1] = 0;
 	free(ptr);
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_memccpy(void)
@@ -409,7 +447,7 @@ static void	test_memccpy(void)
 		test[5] = 0;
 	else
 		test[5] = 1;
-	print_test_results(test, ctrl, 6);
+	print_test_results(test, ctrl, 6, NULL);
 }
 
 static void	test_memchr(void)
@@ -428,7 +466,7 @@ static void	test_memchr(void)
 		test[2] = 0;
 	if (memchr(str1, 'g', 11) == ft_memchr(str1, 'g', 11))
 		test[3] = 0;
-	print_test_results(test, ctrl, 4);
+	print_test_results(test, ctrl, 4, NULL);
 }
 
 static void	test_memcmp(void)
@@ -443,7 +481,7 @@ static void	test_memcmp(void)
 	ctrl[1] = ft_memcmp(str1, str2, 6);
 	test[2] = memcmp("a", "b", 0);
 	ctrl[2] = ft_memcmp("a", "b", 0);
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
 
 static void	test_memcpy(void)
@@ -461,7 +499,7 @@ static void	test_memcpy(void)
 	test[0] = strcmp(memcpy(str2, str1, strlen(str1) + 1), ft_memcpy(str3, str1, strlen(str1) + 1));
 	free(str2);
 	free(str3);
-	print_test_results(test, ctrl, 1);
+	print_test_results(test, ctrl, 1, NULL);
 }
 
 static void	test_memdel(void)
@@ -487,7 +525,7 @@ static void	test_memdel(void)
 	if (!ptr)
 		test[0] = 0;
 	free(ptr);
-	print_test_results(test, ctrl, 1);
+	print_test_results(test, ctrl, 1, NULL);
 }
 
 static void	test_memmove(void)
@@ -505,7 +543,7 @@ static void	test_memmove(void)
 	test[0] = strcmp(memmove(str1 + 1, str1, n), ft_memmove(str2 + 1, str2, n));
 	test[1] = strcmp(memmove(str3, str3 + 1, n), ft_memmove(str4, str4 + 1, n));
 	test[2] = strcmp(memmove(str1, str1, n), ft_memmove(str2, str2, n));
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
 
 static void	test_memset(void)
@@ -520,7 +558,7 @@ static void	test_memset(void)
 	test[1] = strcmp(memset(str1, '-', 1), ft_memset(str2, '-', 1));
 	test[2] = strcmp(memset(str1, '-', 5), ft_memset(str2, '-', 5));
 	test[3] = strcmp(memset(str1, 0, 5), ft_memset(str2, 0, 5));
-	print_test_results(test, ctrl, 4);
+	print_test_results(test, ctrl, 4, NULL);
 }
 
 static void	test_strcat(void)
@@ -540,7 +578,7 @@ static void	test_strcat(void)
 	test[0] = strcmp(strcat(dst1, src), ft_strcat(dst2, src));
 	free(dst1);
 	free(dst2);
-	print_test_results(test, ctrl, 1);
+	print_test_results(test, ctrl, 1, NULL);
 }
 
 static void	test_strchr(void)
@@ -557,7 +595,7 @@ static void	test_strchr(void)
 		test[1] = 0;
 	if (strchr(str, '@') == ft_strchr(str, '@'))
 		test[2] = 0;
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
 
 static void	test_strclr(void)
@@ -582,7 +620,7 @@ static void	test_strclr(void)
 		++i;
 	if (i == n)
 		test[1] = 0;
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_strcmp(void)
@@ -609,7 +647,7 @@ static void	test_strcmp(void)
 	test[7] = ft_strcmp("\200\230\100\255", "\200\230\100\255");
 	test[8] = ft_strcmp("\200\230\100\255", "\0\230\100\255");
 	test_sign(test, ctrl, 9);
-	print_test_results(test, ctrl, 9);
+	print_test_results(test, ctrl, 9, NULL);
 }
 
 static void	test_strcpy(void)
@@ -632,7 +670,7 @@ static void	test_strcpy(void)
 		test[1] = 0;
 	free(dst1);
 	free(dst2);
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_strdel(void)
@@ -658,7 +696,7 @@ static void	test_strdel(void)
 	if (!str)
 		test[0] = 0;
 	free(str);
-	print_test_results(test, ctrl, 1);
+	print_test_results(test, ctrl, 1, NULL);
 }
 
 static void	test_strdup(void)
@@ -678,12 +716,12 @@ static void	test_strdup(void)
 	if (dst && !(*dst))
 		test[2] = 0;
 	free(dst);
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
 
 static void	test_strequ(void)
 {
-	int		test[12], ctrl[12];
+	int		test[12], ctrl[12], warning[]={9, -1};
 
 	print_test_name("strequ");
 #ifdef SEGFAULT_ME
@@ -715,7 +753,7 @@ static void	test_strequ(void)
 	test[8] = ft_strequ("\200\230\100\255", "\0\230\100\255");
 	test_negate(ctrl, 9);
 #ifdef SEGFAULT_ME
-	print_test_results_summary(test, ctrl, 12);
+	print_test_results(test, ctrl, 12, warning);
 #else
 	print_test_results_summary(test, ctrl, 9);
 #endif
@@ -739,7 +777,7 @@ static void	test_striter(void)
 	test[0] = strcmp(str1, "");
 	ft_striter(str2, &f_iter);
 	test[1] = strcmp(str2, "bcdefgh");
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_striteri(void)
@@ -760,33 +798,36 @@ static void	test_striteri(void)
 	test[0] = strcmp(str1, "");
 	ft_striteri(str2, &f_iteri);
 	test[1] = strcmp(str2, "acegikm");
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_strjoin(void)
 {
-	int		test[8], ctrl[8];
+	int		test[8], ctrl[8], warning[]={4, 5, 6, 7, -1};
 	char	*str;
 
 	print_test_name("strjoin");
 	init(ctrl, 8, 0);
+	init(test, 8, 1);
 #ifdef SEGFAULT_ME
 	fflush(stdout);
 	str = ft_strjoin(NULL, NULL);
-	test[5] = 1;
 	if (!str)
 		test[5] = 0;
 	free(str);
-	/* Tests 2 and 3 are a personnal opinion          */
+	/* Tests 6 and 7 are a personnal opinion          */
 	/* on what the behavior of strjoin should be when */
 	/* one of the pointers is NULL. Some will argue   */
 	/* that we should return NULL in such a case.     */
 	/* I chose to return a copy of the non NUL string */
+	/* ( => behave like a strdup)                     */
 	str = ft_strjoin(NULL, "test");
-	test[6] = strcmp("test", str);
+	if (str)
+		test[6] = strcmp("test", str);
 	free(str);
 	str = ft_strjoin("test", NULL);
-	test[7] = strcmp("test", str);
+	if (str)
+		test[7] = strcmp("test", str);
 	free(str);
 #endif
 	str = ft_strjoin("test", "string");
@@ -804,7 +845,7 @@ static void	test_strjoin(void)
 	str = ft_strjoin("", "");
 	test[4] = strcmp("", str);
 	free(str);
-	print_test_results(test, ctrl, 8);
+	print_test_results(test, ctrl, 8, warning);
 }
 
 static void	test_strlcat(void)
@@ -845,7 +886,7 @@ static void	test_strlcat(void)
 	test[3] = strcmp(dst1, dst2);
 	free(dst1);
 	free(dst2);
-	print_test_results(test, ctrl, 4);
+	print_test_results(test, ctrl, 4, NULL);
 }
 
 static void	test_strlen(void)
@@ -857,7 +898,7 @@ static void	test_strlen(void)
 	ctrl[0] = ft_strlen("");
 	test[1] = strlen("\001\002\003\004\005\200");
 	ctrl[1] = ft_strlen("\001\002\003\004\005\200");
-	print_test_results(test, ctrl, 2);
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_strmap(void)
@@ -888,9 +929,9 @@ static void	test_strmap(void)
 	free(ptr1);
 	free(ptr2);
 #ifdef SEGFAULT_ME
-	print_test_results(test, ctrl, 8);
+	print_test_results(test, ctrl, 8, NULL);
 #else	
-	print_test_results(test, ctrl, 4);
+	print_test_results(test, ctrl, 4, NULL);
 #endif
 }
 
@@ -922,9 +963,9 @@ static void	test_strmapi(void)
 	free(ptr1);
 	free(ptr2);
 #ifdef SEGFAULT_ME
-	print_test_results(test, ctrl, 8);
+	print_test_results(test, ctrl, 8, NULL);
 #else	
-	print_test_results(test, ctrl, 4);
+	print_test_results(test, ctrl, 4, NULL);
 #endif
 }
 
@@ -947,7 +988,7 @@ static void	test_strncat(void)
 	test[2] = strcmp(strncat(dst1, src, 50), ft_strncat(dst2, src, 50));
 	free(dst1);
 	free(dst2);
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
 
 static void	test_strncmp(void)
@@ -1002,7 +1043,7 @@ static void	test_strncpy(void)
 	memset(dst2, 'a', sizeof(*dst2) * n);
 	ctrl[0] = 0;
 	test[0] = memcmp(strncpy(dst1, src, n), ft_strncpy(dst2, src, n), sizeof(*dst1) * n);
-	print_test_results(test, ctrl, 1);
+	print_test_results(test, ctrl, 1, NULL);
 }
 
 static void	test_strnequ(void)
@@ -1075,7 +1116,7 @@ static void	test_strnew(void)
 	if (!(str = ft_strnew(SIZE_MAX - 1)))
 		test[2] = 0;
 	free(str);
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
 
 static void	test_strnstr(void)
@@ -1131,8 +1172,38 @@ static void	test_strrchr(void)
 		test[1] = 0;
 	if (strrchr(str, '@') == ft_strrchr(str, '@'))
 		test[2] = 0;
-	print_test_results(test, ctrl, 3);
+	print_test_results(test, ctrl, 3, NULL);
 }
+
+/* static void	test_strsplit(void) */
+/* { */
+/* 	int		test[3], ctrl[3]; */
+/* 	char	**tab; */
+
+/* 	print_test_name("strsplit"); */
+/* 	init(ctrl, 3, 0); */
+/* #ifdef SEGFAULT_ME */
+/* 	fflush(stdout); */
+/* 	test[2] = 1; */
+/* 	tab = ft_strsplit(NULL, '*'); */
+/* 	if (!tab) */
+/* 		test[2] = 0; */
+/* #endif */
+/* 	tab = ft_strsplit("test", '*'); */
+/* 	test[0] = strcmp("test", tab[0]); */
+/* 	test[1] = 1; */
+/* 	if (!tab[1]) */
+/* 		test[1] = 0; */
+/* 	free_tab(tab); */
+/* //	tab = ft_strsplit(" test"); */
+/* //	test[2] = strcmp("test", tab); */
+/* //	free_tab(tab); */
+/* #ifdef SEGFAULT_ME */
+/* 	print_test_results_summary(test, ctrl, 3); */
+/* #else */
+/* 	print_test_results_summary(test, ctrl, 2); */
+/* #endif	 */
+/* } */
 
 static void	test_strstr(void)
 {
@@ -1154,16 +1225,17 @@ static void	test_strstr(void)
 		test[4] = 0;
 	if (strstr(str, "ingr") == ft_strstr(str, "ingr"))
 		test[5] = 0;
-	print_test_results(test, ctrl, 6);
+	print_test_results(test, ctrl, 6, NULL);
 }
 
 static void	test_strsub(void)
 {
-	int		test[7], ctrl[7];
+	int		test[9], ctrl[9], warning[]={7, 8, -1};
 	char	src[]="test", *dst;
 
 	print_test_name("strsub");
-	init(ctrl, 5, 0);
+	init(ctrl, 9, 0);
+	init(test, 9, 1);
 #ifdef SEGFAULT_ME
 	fflush(stdout);
 	ft_strsub(NULL, 0, 5);
@@ -1172,7 +1244,6 @@ static void	test_strsub(void)
 	free(ft_strsub("test", 0, 10000000));
 #endif
 	dst = ft_strsub(src, 0, strlen(src));
-	test[0] = 1;
 	if (dst < src || dst > src + strlen(src))
 		test[0] = 0;
 	test[1] = strcmp(src, dst);
@@ -1182,12 +1253,21 @@ static void	test_strsub(void)
 	test[4] = strcmp("g", ft_strsub("test string", 10, 2));
 	test[5] = strcmp("g", ft_strsub("g", 0, 1));
 	test[6] = strcmp("g", ft_strsub("g", 0, 2));
-	print_test_results(test, ctrl, 7);
 	/* You're encourage to test this one more thouroughly but  */
-	/* since behaviour si undefined when start and size do not */
+	/* since behaviour i undefined when start and size do not */
 	/* point to a valid string, I can't force one on you.      */
-	/* However I would suggest something in the likes of:      */
+	/* For example, I could suggest something in the likes of: */
 	/* return (NULL) if (size == 0 OR src[start] == '\0')      */
+	/* The following test are for this sort of implementation  */
+	/* Just ignore them if you would have your ft_strsub       */
+	/* behave differently (for example return "\0")            */
+	dst = ft_strsub("", 0, 1);
+	if (!dst)
+		test[7] = 0;
+	dst = ft_strsub("g", 0, 0);
+	if (!dst)
+		test[8] = 0;
+	print_test_results(test, ctrl, 9, warning);
 }
 
 static void	test_strtrim(void)
@@ -1328,6 +1408,7 @@ int			main(void)
 	test_strnew();
 	test_strnstr();
 	test_strrchr();
+//	test_strsplit();
 	test_strstr();
 	test_strsub();
 	test_strtrim();
@@ -1335,8 +1416,10 @@ int			main(void)
 	test_toupper();
 	printf("If all you see is green, bear in mind this doesn't mean your functions are correct. It means I was not able to figure out what was wrong.\n");
 	printf("You are therefore strongly advised to try out the other tests available out there.\n");
-	set(MAGENTA);
-	printf("Love and kisses, Zaphod.\n");
-	set(UNCOLOR);
+	printf(MAGENTA"Love and kisses, Zaphod."UNCOLOR"\n");
+	printf(YELLOW"disagreed"UNCOLOR" results mean the function did not behave like expected but it is not necessarily a fail (I leave that judgement up to you). See comments in the code for more details.\n");
+	printf(YELLOW"disagreed"UNCOLOR" signifie que la fonction ne s'est pas comporté comme prévu, mais que cela n'est pas forcément un fail (c'est à vous de décider). Référez vous aux commentaires dans le code pour plus de détails.\n");
+	printf(RED"WARNING:"UNCOLOR" If you're using this test for correction/gradation purposes, __please__ check out the code for the tests that failed before sacking another student, and try to understand why they failed. I could have made a mistake, or her/his functions could behave unlike mine, yet still be in accordance with the instructions (this is mostly true for the additional functions). This program is not here to correct in your stead.\n");
+	printf(RED"ATTENTION:"UNCOLOR" Si vous utilisez ce test pour corriger un autre élève, __s'il_vous_plait__ vérifiez le code des tests qui ont échoué avant de la/le saquer, et essayerz de comprendre d'où vient le problème. J'ai pu faire une erreur, ou ses fonctions pourraient avoir un comportement différent des miennes, tout en restant en accord avec les instructions (ceci est valable principalement pour les fonctions supplémentaires). Ce programme n'est pas là pour faire la correction à votre place.\n");
 	return (0);
 }
