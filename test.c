@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/08 17:31:40 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 02:08:57 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,36 @@
 
 #define RESET	"\e[0m"
 #define BOLD	"\e[1m"
-#define	UNBOLD	"\e[21m"
+//#define	UNBOLD	"\e[21m" /* UNBOLD not supported by zsh */
 #define RED		"\e[31m"
 #define GREEN	"\e[32m"
 #define YELLOW	"\e[33m"
 #define BLUE	"\e[34m"
 #define MAGENTA	"\e[35m"
 #define UNCOLOR	"\e[39m"
+
+/* Comment out to remove the NULL tests */
+#define SEGFAULT_ME
+
+static void	f_iter(char *pc)
+{
+	++(*pc);
+}
+
+static void	f_iteri(unsigned int i, char *pc)
+{
+	*pc += i;
+}
+
+static char	f_map(char c)
+{
+	return (++c);
+}
+
+static char	f_mapi(unsigned int i, char c)
+{
+	return (c + i);
+}
 
 static void	set(char *color_code)
 {
@@ -145,10 +168,23 @@ static void	test_sign(int test[], int ctrl[], int n)
 	}
 }
 
+static void	test_negate(int ctrl[], int n)
+{
+	int		i;
+
+	i = 0;
+	while (i < n)
+	{
+		ctrl[i] = !ctrl[i];
+		++i;
+	}
+}
+
 static void	test_atoi(void)
 {
 	int		test[32], ctrl[32];
 
+	print_test_name("atoi");
 	ctrl[0] = atoi("1230978");
 	ctrl[1] = atoi("test");
 	ctrl[2] = atoi("1230978");
@@ -213,7 +249,6 @@ static void	test_atoi(void)
 	test[29] = ft_atoi("\v123");
 	test[30] = ft_atoi("\f123");
 	test[31] = ft_atoi("\r123");
-	print_test_name("atoi");
 	print_test_results_summary(test, ctrl, 32);
 }
 
@@ -225,6 +260,7 @@ static void	test_bzero(void)
 			str3[]="one test string",
 			str4[]="two test string";
 
+	print_test_name("bzero");
 	init(ctrl, 2, 0);
 	init(test, 2, 0);
 	bzero(str1, 0);
@@ -236,7 +272,6 @@ static void	test_bzero(void)
 		++(ctrl[1]);
 	while (!(str4[test[1]]))
 		++(test[1]);
-	print_test_name("bzero");
 	print_test_results(test, ctrl, 2);
 }
 
@@ -244,6 +279,7 @@ static void	test_isalnum(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("isalnum");
 	i = 0;
 	while (i < 1024)
 	{
@@ -251,7 +287,6 @@ static void	test_isalnum(void)
 		test[i] = ft_isalnum(i);
 		++i;
 	}
-	print_test_name("isalnum");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -259,6 +294,7 @@ static void	test_isalpha(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("isalpha");
 	i = 0;
 	while (i < 1024)
 	{
@@ -266,7 +302,6 @@ static void	test_isalpha(void)
 		test[i] = ft_isalpha(i);
 		++i;
 	}
-	print_test_name("isalpha");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -274,6 +309,7 @@ static void	test_isascii(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("isascii");
 	i = 0;
 	while (i < 1024)
 	{
@@ -281,7 +317,6 @@ static void	test_isascii(void)
 		test[i] = ft_isascii(i);
 		++i;
 	}
-	print_test_name("isascii");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -289,6 +324,7 @@ static void	test_isdigit(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("isdigit");
 	i = 0;
 	while (i < 1024)
 	{
@@ -296,7 +332,6 @@ static void	test_isdigit(void)
 		test[i] = ft_isdigit(i);
 		++i;
 	}
-	print_test_name("isdigit");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -304,6 +339,7 @@ static void	test_isprint(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("isprint");
 	i = 0;
 	while (i < 1024)
 	{
@@ -311,7 +347,6 @@ static void	test_isprint(void)
 		test[i] = ft_isprint(i);
 		++i;
 	}
-	print_test_name("isprint");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -320,6 +355,7 @@ static void	test_memalloc(void)
 	int		test[2], ctrl[2];
 	void	*ptr;
 
+	print_test_name("memalloc");
 	ctrl[0] = 512;
 	if (!(ptr = ft_memalloc(ctrl[0])))
 	{
@@ -332,10 +368,9 @@ static void	test_memalloc(void)
 	free(ptr);
 	ctrl[1] = 0;
 	test[1] = 1;
-	if (!(ptr = ft_memalloc(SIZE_MAX)))
+	if (!(ptr = ft_memalloc(SIZE_MAX - 1)))
 		test[1] = 0;
 	free(ptr);
-	print_test_name("memalloc");
 	print_test_results(test, ctrl, 2);
 }
 
@@ -348,6 +383,7 @@ static void	test_memccpy(void)
 			dst4[]="abcdefghijklmnopqrstuvwxyz", src4[]="test\200string";
 	void	*ptr1, *ptr2;
 
+	print_test_name("memccpy");
 	init(ctrl, 6, 0);
 	ptr1 = memccpy(dst1, src1, '0', 4);
 	ptr2 = ft_memccpy(dst2, src2, '0', 4);
@@ -371,7 +407,6 @@ static void	test_memccpy(void)
 		test[5] = 0;
 	else
 		test[5] = 1;
-	print_test_name("memccpy");
 	print_test_results(test, ctrl, 6);
 }
 
@@ -380,6 +415,7 @@ static void	test_memchr(void)
 	int				test[4], ctrl[4];
 	unsigned char	str1[]="test\200string";
 
+	print_test_name("memchr");
 	init(ctrl, 4, 0);
 	init(test, 4, 1);
 	if (memchr(str1, 'a', 12) == ft_memchr(str1, 'a', 12))
@@ -390,7 +426,6 @@ static void	test_memchr(void)
 		test[2] = 0;
 	if (memchr(str1, 'g', 11) == ft_memchr(str1, 'g', 11))
 		test[3] = 0;
-	print_test_name("memchr");
 	print_test_results(test, ctrl, 4);
 }
 
@@ -399,13 +434,13 @@ static void	test_memcmp(void)
 	int		test[3], ctrl[3];
 	char	str1[]="test string", str2[]="test spring";
 
+	print_test_name("memcmp");
 	test[0] = memcmp(str1, str2, 12);
 	ctrl[0] = ft_memcmp(str1, str2, 12);
 	test[1] = memcmp(str1, str2, 6);
 	ctrl[1] = ft_memcmp(str1, str2, 6);
 	test[2] = memcmp("a", "b", 0);
 	ctrl[2] = ft_memcmp("a", "b", 0);
-	print_test_name("memcmp");
 	print_test_results(test, ctrl, 3);
 }
 
@@ -414,6 +449,7 @@ static void	test_memcpy(void)
 	int		test[1], ctrl[1];
 	char	str1[]="test string", *str2, *str3;
 
+	print_test_name("memcpy");
 	if (!(str2 = malloc(sizeof(*str2) * 20)) || !(str3 = malloc(sizeof(*str3) * 20)))
 	{
 		perror("malloc() failed: ");
@@ -423,7 +459,6 @@ static void	test_memcpy(void)
 	test[0] = strcmp(memcpy(str2, str1, strlen(str1) + 1), ft_memcpy(str3, str1, strlen(str1) + 1));
 	free(str2);
 	free(str3);
-	print_test_name("memcpy");
 	print_test_results(test, ctrl, 1);
 }
 
@@ -432,6 +467,13 @@ static void	test_memdel(void)
 	int		test[1], ctrl[1];
 	void	*ptr;
 
+	print_test_name("memdel");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ptr = NULL;
+	ft_memdel(NULL);
+	ft_memdel(&ptr);
+#endif
 	if (!(ptr = malloc(1)))
 	{
 		perror("malloc() failed: ");
@@ -443,7 +485,6 @@ static void	test_memdel(void)
 	if (!ptr)
 		test[0] = 0;
 	free(ptr);
-	print_test_name("memdel");
 	print_test_results(test, ctrl, 1);
 }
 
@@ -453,6 +494,7 @@ static void	test_memmove(void)
 	char	str1[]="abcdefghijklmnopqrstuvwxyz", str2[]="abcdefghijklmnopqrstuvwxyz",
 			str3[]="abcdefghijklmnopqrstuvwxyz", str4[]="abcdefghijklmnopqrstuvwxyz";
 
+	print_test_name("memmove");
 	init(ctrl, 3, 0);
 	str1[n - 1] = '\0';
 	str2[n - 1] = '\0';
@@ -461,7 +503,6 @@ static void	test_memmove(void)
 	test[0] = strcmp(memmove(str1 + 1, str1, n), ft_memmove(str2 + 1, str2, n));
 	test[1] = strcmp(memmove(str3, str3 + 1, n), ft_memmove(str4, str4 + 1, n));
 	test[2] = strcmp(memmove(str1, str1, n), ft_memmove(str2, str2, n));
-	print_test_name("memmove");
 	print_test_results(test, ctrl, 3);
 }
 
@@ -471,12 +512,12 @@ static void	test_memset(void)
 	char	str1[]="don't kill me\n",
 			str2[]="don't kill me\n";
 
+	print_test_name("memset");
 	init(ctrl, 4, 0);
 	test[0] = strcmp(memset(str1, '-', 0), ft_memset(str2, '-', 0));
 	test[1] = strcmp(memset(str1, '-', 1), ft_memset(str2, '-', 1));
 	test[2] = strcmp(memset(str1, '-', 5), ft_memset(str2, '-', 5));
 	test[3] = strcmp(memset(str1, 0, 5), ft_memset(str2, 0, 5));
-	print_test_name("memset");
 	print_test_results(test, ctrl, 4);
 }
 
@@ -485,6 +526,7 @@ static void	test_strcat(void)
 	int		test[1], ctrl[1];
 	char	*dst1, *dst2, src[]="test";
 
+	print_test_name("strcat");
 	if (!(dst1 = malloc(sizeof(*dst1) * (strlen(src) + 1) * 3)) || !(dst2 = malloc(sizeof(*dst2) * (strlen(src) + 1) * 3)))
 	{
 		perror("malloc() failed: ");
@@ -496,14 +538,56 @@ static void	test_strcat(void)
 	test[0] = strcmp(strcat(dst1, src), ft_strcat(dst2, src));
 	free(dst1);
 	free(dst2);
-	print_test_name("strcat");
 	print_test_results(test, ctrl, 1);
+}
+
+static void	test_strchr(void)
+{
+	int		test[3], ctrl[3];
+	char	str[]="test string test string test string";
+
+	print_test_name("strchr");
+	init(ctrl, 3, 0);
+	init(test, 3, 1);
+	if (strchr(str, ' ') == ft_strchr(str, ' '))
+		test[0] = 0;
+	if (strchr(str, '\0') == ft_strchr(str, '\0'))
+		test[1] = 0;
+	if (strchr(str, '@') == ft_strchr(str, '@'))
+		test[2] = 0;
+	print_test_results(test, ctrl, 3);
+}
+
+static void	test_strclr(void)
+{
+	int		test[2], ctrl[2], i, n;
+	char	str1[]="\0abc", str2[]="\377abc\200\377";
+
+	print_test_name("strclr");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ft_strclr(NULL);
+#endif
+	init(ctrl, 2, 0);
+	init(test, 2, 1);
+	ft_strclr(str1);
+	if (!(*str1) && str1[1] && str1[3] && !str1[4])
+		test[0] = 0;
+	i = 0;
+	n = strlen(str2) + 1;
+	ft_strclr(str2);
+	while (!str2[i] && i < n)
+		++i;
+	if (i == n)
+		test[1] = 0;
+	print_test_results(test, ctrl, 2);
 }
 
 static void	test_strcmp(void)
 {
 	int		test[9], ctrl[9];
 
+	print_test_name("strcmp");
 	ctrl[0] = strcmp("test string", "test string");
 	ctrl[1] = strcmp("test string", "test spring");
 	ctrl[2] = strcmp("test string", "test string ");
@@ -523,7 +607,6 @@ static void	test_strcmp(void)
 	test[7] = ft_strcmp("\200\230\100\255", "\200\230\100\255");
 	test[8] = ft_strcmp("\200\230\100\255", "\0\230\100\255");
 	test_sign(test, ctrl, 9);
-	print_test_name("strcmp");
 	print_test_results(test, ctrl, 9);
 }
 
@@ -532,6 +615,7 @@ static void	test_strcpy(void)
 	int		test[2], ctrl[2];
 	char	*dst1, *dst2, src1[]="\001test string\200", src2[]="test";
 
+	print_test_name("strcpy");
 	init(ctrl, 2, 0);
 	if (!(dst1 = malloc(strlen(src1) + 1)) || !(dst2 = malloc(strlen(src1) + 1)))
 	{
@@ -546,8 +630,33 @@ static void	test_strcpy(void)
 		test[1] = 0;
 	free(dst1);
 	free(dst2);
-	print_test_name("strcpy");
 	print_test_results(test, ctrl, 2);
+}
+
+static void	test_strdel(void)
+{
+	int		test[1], ctrl[1];
+	char	*str;
+
+	print_test_name("strdel");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	str = NULL;
+	ft_strdel(NULL);
+	ft_strdel(&str);
+#endif
+	if (!(str = (char *)malloc(sizeof(*str) * 5)))
+	{
+		perror("malloc() failed: ");
+		exit(EXIT_FAILURE);
+	}
+	ctrl[0] = 0;
+	test[0] = 1;
+	ft_strdel(&str);
+	if (!str)
+		test[0] = 0;
+	free(str);
+	print_test_results(test, ctrl, 1);
 }
 
 static void	test_strdup(void)
@@ -555,6 +664,7 @@ static void	test_strdup(void)
 	int		test[3], ctrl[3];
 	char	*dst, src[]="test string";
 
+	print_test_name("strdup");
 	init(ctrl, 3, 0);
 	init(test, 3, 1);
 	dst = ft_strdup(src);
@@ -566,8 +676,89 @@ static void	test_strdup(void)
 	if (dst && !(*dst))
 		test[2] = 0;
 	free(dst);
-	print_test_name("strdup");
 	print_test_results(test, ctrl, 3);
+}
+
+static void	test_strequ(void)
+{
+	int		test[12], ctrl[12];
+
+	print_test_name("strequ");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ctrl[9] = 0;
+	ctrl[10] = 0;
+	ctrl[11] = 0;
+	test[9] = ft_strequ(NULL, NULL);
+	test[10] = ft_strequ("test", NULL);
+	test[11] = ft_strequ(NULL, "test");
+#endif
+	ctrl[0] = strcmp("test string", "test string");
+	ctrl[1] = strcmp("test string", "test spring");
+	ctrl[2] = strcmp("test string", "test string ");
+	ctrl[3] = strcmp("test string ", "test string");
+	ctrl[4] = strcmp("", "test");
+	ctrl[5] = strcmp("test", "");
+	ctrl[6] = strcmp("", "");
+	ctrl[7] = strcmp("\200\230\100\255", "\200\230\100\255");
+	ctrl[8] = strcmp("\200\230\100\255", "\0\230\100\255");
+	test[0] = ft_strequ("test string", "test string");
+	test[1] = ft_strequ("test string", "test spring");
+	test[2] = ft_strequ("test string", "test string ");
+	test[3] = ft_strequ("test string ", "test string");
+	test[4] = ft_strequ("", "test");
+	test[5] = ft_strequ("test", "");
+	test[6] = ft_strequ("", "");
+	test[7] = ft_strequ("\200\230\100\255", "\200\230\100\255");
+	test[8] = ft_strequ("\200\230\100\255", "\0\230\100\255");
+	test_negate(ctrl, 9);
+#ifdef SEGFAULT_ME
+	print_test_results_summary(test, ctrl, 12);
+#else
+	print_test_results_summary(test, ctrl, 9);
+#endif
+}
+
+static void	test_striter(void)
+{
+	int		test[2], ctrl[2];
+	char	str1[]="", str2[]="abcdefg";
+
+	print_test_name("striter");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ft_striter(NULL, NULL);
+	ft_striter("test", NULL);
+	ft_striter("", NULL);
+	ft_striter(NULL, f_iter);
+#endif
+	init(ctrl, 2, 0);
+	ft_striter(str1, &f_iter);
+	test[0] = strcmp(str1, "");
+	ft_striter(str2, &f_iter);
+	test[1] = strcmp(str2, "bcdefgh");
+	print_test_results(test, ctrl, 2);
+}
+
+static void	test_striteri(void)
+{
+	int		test[2], ctrl[2];
+	char	str1[]="", str2[]="abcdefg";
+
+	print_test_name("striteri");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ft_striteri(NULL, NULL);
+	ft_striteri("test", NULL);
+	ft_striteri("", NULL);
+	ft_striteri(NULL, f_iteri);
+#endif
+	init(ctrl, 2, 0);
+	ft_striteri(str1, &f_iteri);
+	test[0] = strcmp(str1, "");
+	ft_striteri(str2, &f_iteri);
+	test[1] = strcmp(str2, "acegikm");
+	print_test_results(test, ctrl, 2);
 }
 
 static void	test_strlcat(void)
@@ -576,6 +767,7 @@ static void	test_strlcat(void)
 	int		test[4], ctrl[4];
 	char	*dst1, *dst2, src[]="test string";
 
+	print_test_name("strlcat");
 	init(ctrl, 4, 0);
 	n = (strlen(src) + 1);
 	if (!(dst1 = malloc(sizeof(*dst1) * n)) || !(dst2 = malloc(sizeof(*dst2) * n)))
@@ -607,37 +799,87 @@ static void	test_strlcat(void)
 	test[3] = strcmp(dst1, dst2);
 	free(dst1);
 	free(dst2);
-	print_test_name("strlcat");
 	print_test_results(test, ctrl, 4);
-}
-
-static void	test_strchr(void)
-{
-	int		test[3], ctrl[3];
-	char	str[]="test string test string test string";
-
-	init(ctrl, 3, 0);
-	init(test, 3, 1);
-	if (strchr(str, ' ') == ft_strchr(str, ' '))
-		test[0] = 0;
-	if (strchr(str, '\0') == ft_strchr(str, '\0'))
-		test[1] = 0;
-	if (strchr(str, '@') == ft_strchr(str, '@'))
-		test[2] = 0;
-	print_test_name("strchr");
-	print_test_results(test, ctrl, 3);
 }
 
 static void	test_strlen(void)
 {
 	int		test[2], ctrl[2];
 
+	print_test_name("strlen");
 	test[0] = strlen("");
 	ctrl[0] = ft_strlen("");
 	test[1] = strlen("\001\002\003\004\005\200");
 	ctrl[1] = ft_strlen("\001\002\003\004\005\200");
-	print_test_name("strlen");
 	print_test_results(test, ctrl, 2);
+}
+
+static void	test_strmap(void)
+{
+	int		test[8], ctrl[8];
+	char	str1[]="", str2[]="abcdefg", *ptr1, *ptr2;
+
+	print_test_name("strmap");
+	init(ctrl, 8, 0);
+	init(test, 8, 1);
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	if (!ft_strmap(NULL, NULL))
+		test[4] = 0;
+	if (!ft_strmap("test", NULL))
+		test[5] = 0;
+	if (!ft_strmap("", NULL))
+		test[6] = 0;
+	if (!ft_strmap(NULL, f_map))
+		test[7] = 0;
+#endif
+	ptr1 = ft_strmap(str1, &f_map);
+	test[0] = strcmp(str1, "");
+	test[1] = strcmp(ptr1, "");
+	ptr2 = ft_strmap(str2, &f_map);
+	test[2] = strcmp(str2, "abcdefg");
+	test[3] = strcmp(ptr2, "bcdefgh");
+	free(ptr1);
+	free(ptr2);
+#ifdef SEGFAULT_ME
+	print_test_results(test, ctrl, 8);
+#else	
+	print_test_results(test, ctrl, 4);
+#endif
+}
+
+static void	test_strmapi(void)
+{
+	int		test[8], ctrl[8];
+	char	str1[]="", str2[]="abcdefg", *ptr1, *ptr2;
+
+	print_test_name("strmapi");
+	init(ctrl, 8, 0);
+	init(test, 8, 1);
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	if (!ft_strmapi(NULL, NULL))
+		test[4] = 0;
+	if (!ft_strmapi("test", NULL))
+		test[5] = 0;
+	if (!ft_strmapi("", NULL))
+		test[6] = 0;
+	if (!ft_strmapi(NULL, f_mapi))
+		test[7] = 0;
+#endif
+	ptr1 = ft_strmapi(str1, &f_mapi);
+	test[0] = strcmp(str1, "");
+	test[1] = strcmp(ptr1, "");
+	ptr2 = ft_strmapi(str2, &f_mapi);
+	test[2] = strcmp(str2, "abcdefg");
+	test[3] = strcmp(ptr2, "acegikm");
+	free(ptr1);
+	free(ptr2);
+#ifdef SEGFAULT_ME
+	print_test_results(test, ctrl, 8);
+#else	
+	print_test_results(test, ctrl, 4);
+#endif
 }
 
 static void	test_strncat(void)
@@ -645,6 +887,7 @@ static void	test_strncat(void)
 	int		test[3], ctrl[3];
 	char	*dst1, *dst2, src[]="test string";
 
+	print_test_name("strncat");
 	init(ctrl, 3, 0);
 	if (!(dst1 = malloc(sizeof(*dst1) * 100)) || !(dst2 = malloc(sizeof(*dst2) * 100)))
 	{
@@ -658,7 +901,6 @@ static void	test_strncat(void)
 	test[2] = strcmp(strncat(dst1, src, 50), ft_strncat(dst2, src, 50));
 	free(dst1);
 	free(dst2);
-	print_test_name("strncat");
 	print_test_results(test, ctrl, 3);
 }
 
@@ -666,6 +908,7 @@ static void	test_strncmp(void)
 {
 	int		test[13], ctrl[13];
 
+	print_test_name("strncmp");
 	ctrl[0] = strncmp("test string", "test string", 0);
 	ctrl[1] = strncmp("test string", "test string", 30);
 	ctrl[2] = strncmp("test string", "test spring", 6);
@@ -693,8 +936,7 @@ static void	test_strncmp(void)
 	test[11] = ft_strncmp("\200\230\100\255", "\200\230\100\255", 5);
 	test[12] = ft_strncmp("\200\230\100\255", "\200\0\100\255", 5);
 	test_sign(test, ctrl, 13);
-	print_test_name("strncmp");
-	print_test_results(test, ctrl, 13);
+	print_test_results_summary(test, ctrl, 13);
 }
 
 static void	test_strncpy(void)
@@ -703,6 +945,7 @@ static void	test_strncpy(void)
 	size_t	n;
 	char	*dst1, *dst2, src[]="test string";
 
+	print_test_name("strncpy");
 	n = strlen(src) + 4;
 	if (!(dst1 = malloc(sizeof(*dst1) * n)) || !(dst2 = malloc(sizeof(*dst2) * n)))
 	{
@@ -713,8 +956,80 @@ static void	test_strncpy(void)
 	memset(dst2, 'a', sizeof(*dst2) * n);
 	ctrl[0] = 0;
 	test[0] = memcmp(strncpy(dst1, src, n), ft_strncpy(dst2, src, n), sizeof(*dst1) * n);
-	print_test_name("strncpy");
 	print_test_results(test, ctrl, 1);
+}
+
+static void	test_strnequ(void)
+{
+	int		test[16], ctrl[16];
+
+	print_test_name("strnequ");
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	ctrl[13] = 0;
+	ctrl[14] = 0;
+	ctrl[15] = 0;
+	test[13] = ft_strequ(NULL, NULL);
+	test[14] = ft_strequ("test", NULL);
+	test[15] = ft_strequ(NULL, "test");
+#endif
+	ctrl[0] = strncmp("test string", "test string", 0);
+	ctrl[1] = strncmp("test string", "test string", 30);
+	ctrl[2] = strncmp("test string", "test spring", 6);
+	ctrl[3] = strncmp("test string", "test spring", 7);
+	ctrl[4] = strncmp("test string", "test spring", 8);
+	ctrl[5] = strncmp("test string", "test string    ", 12);
+	ctrl[6] = strncmp("test string", "test string    ", 30);
+	ctrl[7] = strncmp("", "test", 0);
+	ctrl[8] = strncmp("", "", 0);
+	ctrl[9] = strncmp("", "", 1);
+	ctrl[10] = strncmp("", "", 2);
+	ctrl[11] = strncmp("\200\230\100\255", "\200\230\100\255", 5);
+	ctrl[12] = strncmp("\200\230\100\255", "\200\0\100\255", 5);
+	test[0] = ft_strnequ("test string", "test string", 0);
+	test[1] = ft_strnequ("test string", "test string", 30);
+	test[2] = ft_strnequ("test string", "test spring", 6);
+	test[3] = ft_strnequ("test string", "test spring", 7);
+	test[4] = ft_strnequ("test string", "test spring", 8);
+	test[5] = ft_strnequ("test string", "test string    ", 12);
+	test[6] = ft_strnequ("test string", "test string    ", 30);
+	test[7] = ft_strnequ("", "test", 0);
+	test[8] = ft_strnequ("", "", 0);
+	test[9] = ft_strnequ("", "", 1);
+	test[10] = ft_strnequ("", "", 2);
+	test[11] = ft_strnequ("\200\230\100\255", "\200\230\100\255", 5);
+	test[12] = ft_strnequ("\200\230\100\255", "\200\0\100\255", 5);
+	test_negate(ctrl, 13);
+#ifdef SEGFAULT_ME
+	print_test_results_summary(test, ctrl, 16);
+#else
+	print_test_results_summary(test, ctrl, 13);
+#endif
+}
+
+static void	test_strnew(void)
+{
+	int		test[3], ctrl[3];
+	char	*str;
+
+	print_test_name("strnew");
+	ctrl[0] = 512;
+	str = ft_strnew(ctrl[0]);
+	test[0] = 0;
+	while (test[0] < ctrl[0] && !(*str))
+		++(test[0]);
+	free(str);
+	ctrl[1] = 0;
+	test[1] = 1;
+	if (!(str = ft_strnew(SIZE_MAX)))
+		test[1] = 0;
+	free(str);
+	ctrl[2] = 0;
+	test[2] = 1;
+	if (!(str = ft_strnew(SIZE_MAX - 1)))
+		test[2] = 0;
+	free(str);
+	print_test_results(test, ctrl, 3);
 }
 
 static void	test_strnstr(void)
@@ -722,6 +1037,7 @@ static void	test_strnstr(void)
 	int		test[14], ctrl[14];
 	char	str[]="test\200string test\200string";
 
+	print_test_name("strnstr");
 	init(ctrl, 14, 0);
 	init(test, 14, 1);
 	if (strnstr(str, "test", 6) == ft_strnstr(str, "test", 6))
@@ -752,7 +1068,6 @@ static void	test_strnstr(void)
 		test[12] = 0;
 	if (strnstr(str, "ingr", strlen(str)) == ft_strnstr(str, "ingr", strlen(str)))
 		test[13] = 0;
-	print_test_name("strnstr");
 	print_test_results_summary(test, ctrl, 14);
 }
 
@@ -761,6 +1076,7 @@ static void	test_strrchr(void)
 	int		test[3], ctrl[3];
 	char	str[]="test string test string test string";
 
+	print_test_name("strrchr");
 	init(ctrl, 3, 0);
 	init(test, 3, 1);
 	if (strrchr(str, ' ') == ft_strrchr(str, ' '))
@@ -769,7 +1085,6 @@ static void	test_strrchr(void)
 		test[1] = 0;
 	if (strrchr(str, '@') == ft_strrchr(str, '@'))
 		test[2] = 0;
-	print_test_name("strrchr");
 	print_test_results(test, ctrl, 3);
 }
 
@@ -778,6 +1093,7 @@ static void	test_strstr(void)
 	int		test[6], ctrl[6];
 	char	str[]="test\200string test\200string";
 
+	print_test_name("strstr");
 	init(ctrl, 6, 0);
 	init(test, 6, 1);
 	if (strstr(str, "test") == ft_strstr(str, "test"))
@@ -792,7 +1108,6 @@ static void	test_strstr(void)
 		test[4] = 0;
 	if (strstr(str, "ingr") == ft_strstr(str, "ingr"))
 		test[5] = 0;
-	print_test_name("strstr");
 	print_test_results(test, ctrl, 6);
 }
 
@@ -800,6 +1115,7 @@ static void	test_tolower(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("tolower");
 	i = 0;
 	while (i < 1024)
 	{
@@ -807,7 +1123,6 @@ static void	test_tolower(void)
 		test[i] = ft_tolower(i);
 		++i;
 	}
-	print_test_name("tolower");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -815,6 +1130,7 @@ static void	test_toupper(void)
 {
 	int		i, test[1024], ctrl[1024];
 
+	print_test_name("toupper");
 	i = 0;
 	while (i < 1024)
 	{
@@ -822,7 +1138,6 @@ static void	test_toupper(void)
 		test[i] = ft_toupper(i);
 		++i;
 	}
-	print_test_name("toupper");
 	print_test_results_summary(test, ctrl, 1024);
 }
 
@@ -845,14 +1160,23 @@ int			main(void)
 	test_memset();
 	test_strcat();
 	test_strchr();
+	test_strclr();
 	test_strcmp();
 	test_strcpy();
+	test_strdel();
 	test_strdup();
+	test_strequ();
+	test_striter();
+	test_striteri();
 	test_strlcat();
 	test_strlen();
+	test_strmap();
+	test_strmapi();
 	test_strncat();
 	test_strncmp();
 	test_strncpy();
+	test_strnequ();
+	test_strnew();
 	test_strnstr();
 	test_strrchr();
 	test_strstr();
