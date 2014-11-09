@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 14:54:45 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/09 15:22:49 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -771,6 +771,7 @@ static void	test_strjoin(void)
 	print_test_name("strjoin");
 	init(ctrl, 8, 0);
 #ifdef SEGFAULT_ME
+	fflush(stdout);
 	str = ft_strjoin(NULL, NULL);
 	test[5] = 1;
 	if (!str)
@@ -1189,6 +1190,75 @@ static void	test_strsub(void)
 	/* return (NULL) if (size == 0 OR src[start] == '\0')      */
 }
 
+static void	test_strtrim(void)
+{
+	int		test[17], ctrl[17];
+	char	*dst, src[]="test";
+
+	print_test_name("strtrim");
+	init(ctrl, 17, 0);
+#ifdef SEGFAULT_ME
+	fflush(stdout);
+	test[16] = 1;
+	dst = ft_strtrim(NULL);
+	if (!dst)
+		test[16] = 0;
+#endif
+	dst = ft_strtrim("test");
+	test[0] = strcmp("test", dst);
+	test[1] = 1;
+	if (dst != src)
+		test[1] = 0;
+	free(dst);
+	dst = ft_strtrim(" test");
+	test[2] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("test ");
+	test[3] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("\ntest");
+	test[4] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("test\n");
+	test[5] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("\ttest");
+	test[6] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("test\t");
+	test[7] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("    test        ");
+	test[8] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("    test\n");
+	test[9] = strcmp("test", dst);
+	free(dst);
+	dst = ft_strtrim("   \n  \t \nt\n");
+	test[10] = strcmp("t", dst);
+	free(dst);
+	dst = ft_strtrim("             t\n  \t \n  t\n ");
+	test[11] = strcmp("t\n  \t \n  t", dst);
+	free(dst);
+	dst = ft_strtrim("t t");
+	test[12] = strcmp("t t", dst);
+	free(dst);
+	dst = ft_strtrim("               \nt\n");
+	test[13] = strcmp("t", dst);
+	free(dst);
+	dst = ft_strtrim("");
+	test[14] = strcmp("", dst);
+	free(dst);
+	dst = ft_strtrim("          \n        \n \t");
+	test[15] = strcmp("", dst);
+	free(dst);
+#ifdef SEGFAULT_ME
+	print_test_results_summary(test, ctrl, 17);
+#else
+	print_test_results_summary(test, ctrl, 16);
+#endif
+}
+
 static void	test_tolower(void)
 {
 	int		i, test[1024], ctrl[1024];
@@ -1260,6 +1330,7 @@ int			main(void)
 	test_strrchr();
 	test_strstr();
 	test_strsub();
+	test_strtrim();
 	test_tolower();
 	test_toupper();
 	printf("If all you see is green, bear in mind this doesn't mean your functions are correct. It means I was not able to figure out what was wrong.\n");
