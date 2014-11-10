@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/10 14:43:08 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/10 16:14:34 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,18 +275,18 @@ static void	test_atoi(void)
 	ctrl[17] = atoi("00100");
 	ctrl[18] = atoi("\t123");
 	ctrl[19] = atoi("\n123");
-	ctrl[20] = atoi("\e123");
-	ctrl[21] = atoi("");
-	ctrl[22] = atoi(" 01+1");
-	ctrl[23] = atoi(" 01-1");
-	ctrl[24] = atoi("3.14");
-	ctrl[25] = atoi("3,14");
-	ctrl[26] = atoi("9999999999");
-	ctrl[27] = atoi("2147483647");
-	ctrl[28] = atoi("-2147483648");
-	ctrl[29] = atoi("\v123");
-	ctrl[30] = atoi("\f123");
-	ctrl[31] = atoi("\r123");
+	ctrl[20] = atoi("");
+	ctrl[21] = atoi(" 01+1");
+	ctrl[22] = atoi(" 01-1");
+	ctrl[23] = atoi("3.14");
+	ctrl[24] = atoi("3,14");
+	ctrl[25] = atoi("9999999999");
+	ctrl[26] = atoi("2147483647");
+	ctrl[27] = atoi("-2147483648");
+	ctrl[28] = atoi("\v123");
+	ctrl[29] = atoi("\f123");
+	ctrl[30] = atoi("\r123");
+	ctrl[31] = atoi("\e123");
 	test[0] = ft_atoi("1230978");
 	test[1] = ft_atoi("test");
 	test[2] = ft_atoi("1230978");
@@ -307,18 +307,18 @@ static void	test_atoi(void)
 	test[17] = ft_atoi("00100");
 	test[18] = ft_atoi("\n123");
 	test[19] = ft_atoi("\t123");
-	test[20] = ft_atoi("\e123");
-	test[21] = ft_atoi("");
-	test[22] = ft_atoi(" 01+1");
-	test[23] = ft_atoi(" 01-1");
-	test[24] = ft_atoi("3.14");
-	test[25] = ft_atoi("3,14");
-	test[26] = ft_atoi("9999999999");
-	test[27] = ft_atoi("2147483647");
-	test[28] = ft_atoi("-2147483648");
-	test[29] = ft_atoi("\v123");
-	test[30] = ft_atoi("\f123");
-	test[31] = ft_atoi("\r123");
+	test[20] = ft_atoi("");
+	test[21] = ft_atoi(" 01+1");
+	test[22] = ft_atoi(" 01-1");
+	test[23] = ft_atoi("3.14");
+	test[24] = ft_atoi("3,14");
+	test[25] = ft_atoi("9999999999");
+	test[26] = ft_atoi("2147483647");
+	test[27] = ft_atoi("-2147483648");
+	test[28] = ft_atoi("\v123");
+	test[29] = ft_atoi("\f123");
+	test[30] = ft_atoi("\r123");
+	test[31] = ft_atoi("\e123");
 	print_test_results_summary(test, ctrl, 32);
 }
 
@@ -553,20 +553,30 @@ static void	test_memcmp(void)
 
 static void	test_memcpy(void)
 {
-	int		test[1], ctrl[1];
+	int		test[5], ctrl[5], n;
 	char	str1[]="test string", *str2, *str3;
 
 	print_test_name("memcpy");
+	init(ctrl, 5, 0);
+	init(test, 5, 1);
 	if (!(str2 = malloc(sizeof(*str2) * 20)) || !(str3 = malloc(sizeof(*str3) * 20)))
 	{
 		perror("malloc() failed: ");
 		exit(EXIT_FAILURE);
 	}
-	ctrl[0] = 0;
-	test[0] = cmp(memcpy(str2, str1, strlen(str1) + 1), ft_memcpy(str3, str1, strlen(str1) + 1));
+	memset(str2, 'a', 20);
+	memset(str3, 'a', 20);
+	n = strlen(str1);
+	test[0] = memcmp(memcpy(str2, str1, 0), ft_memcpy(str3, str1, 0), 20);
+	test[1] = memcmp(memcpy(str2, str1, 1), ft_memcpy(str3, str1, 1), 20);
+	test[2] = memcmp(memcpy(str2, str1, n), ft_memcpy(str3, str1, n), 20);
+	test[3] = memcmp(memcpy(str2, str1, n + 1), ft_memcpy(str3, str1, n + 1), 20);
+	str1[n - 1] = '\0';
+	str1[n] = 'z';
+	test[4] = memcmp(memcpy(str2, str1, n + 1), ft_memcpy(str3, str1, n + 1), 20);
 	free(str2);
 	free(str3);
-	print_test_results(test, ctrl, 1, NULL);
+	print_test_results(test, ctrl, 5, NULL);
 }
 
 static void	test_memdel(void)
@@ -596,21 +606,23 @@ static void	test_memdel(void)
 
 static void	test_memmove(void)
 {
-	int		test[3], ctrl[3], n=6;
+	int		test[4], ctrl[4];
 	char	str1[]="abcdefghijklmnopqrstuvwxyz", str2[]="abcdefghijklmnopqrstuvwxyz",
-			str3[]="abcdefghijklmnopqrstuvwxyz", str4[]="abcdefghijklmnopqrstuvwxyz";
+			str3[]="abcdefghijklmnopqrstuvwxyz", str4[]="abcdefghijklmnopqrstuvwxyz",
+			str5[]="abcdefghijklmnopqrstuvwxyz", str6[]="abcdefghijklmnopqrstuvwxyz";
 
 	print_test_name("memmove");
 	init(ctrl, 3, 0);
 	init(test, 3, 1);
-	str1[n - 1] = '\0';
-	str2[n - 1] = '\0';
-	str3[n - 1] = '\0';
-	str4[n - 1] = '\0';
-	test[0] = cmp(memmove(str1 + 1, str1, n), ft_memmove(str2 + 1, str2, n));
-	test[1] = cmp(memmove(str3, str3 + 1, n), ft_memmove(str4, str4 + 1, n));
-	test[2] = cmp(memmove(str1, str1, n), ft_memmove(str2, str2, n));
-	print_test_results(test, ctrl, 3, NULL);
+	memmove(str1 + 3, str1, 0);
+	ft_memmove(str2 + 3, str2, 0);
+	test[0] = memcmp(str1, str2, 27);
+	memmove(str1 + 3, str1, 8);
+	ft_memmove(str2 + 3, str2, 8);
+	test[1] = memcmp(str1, str2, 27);
+	test[2] = memcmp(memmove(str3, str3 + 5, 8), ft_memmove(str4, str4 + 5, 8), 27);
+	test[3] = memcmp(memmove(str5, str5, 10), ft_memmove(str6, str6, 10), 27);
+	print_test_results(test, ctrl, 4, NULL);
 }
 
 static void	test_memset(void)
