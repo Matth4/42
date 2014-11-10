@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/09 23:50:16 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/10 13:38:20 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ static char	f_mapi(unsigned int i, char c)
 	return (c + i);
 }
 
-static void init(int tab[], int n, int c)
+static void	init(int tab[], int n, int c)
 {
 	int		i;
 
@@ -179,6 +179,34 @@ static void init(int tab[], int n, int c)
 		tab[i] = c;
 		++i;
 	}
+}
+
+static int	cmp(char *str1, char *str2)
+{
+	if (str1 && str2)
+		return (strcmp(str1, str2));
+	return (-1);
+}
+
+static int	ft_cmp(char *str1, char *str2)
+{
+	if (str1 && str2)
+		return (ft_strcmp(str1, str2));
+	return (-1);
+}
+
+static int	ncmp(char *str1, char *str2, size_t n)
+{
+	if (str1 && str2)
+		return (strncmp(str1, str2, n));
+	return (-1);
+}
+
+static int	ft_ncmp(char *str1, char *str2, size_t n)
+{
+	if (str1 && str2)
+		return (ft_strncmp(str1, str2, n));
+	return (-1);
 }
 
 static void	test_sign(int test[], int ctrl[], int n)
@@ -307,7 +335,7 @@ static void	test_bzero(void)
 	init(test, 2, 0);
 	bzero(str1, 0);
 	ft_bzero(str2, 0);
-	test[0] = strcmp(str1, str2);
+	test[0] = cmp(str1, str2);
 	bzero(str3, 10);
 	ft_bzero(str4, 10);
 	while (!(str3[ctrl[1]]))
@@ -402,31 +430,31 @@ static void	test_itoa(void)
 	init(test, 5, 1);
 	snprintf(str1, 21, "%d", 0);
 	str2 = ft_itoa(0);
-	test[0] = strcmp(str1, str2);
+	test[0] = cmp(str1, str2);
 	free(str2);
 	snprintf(str1, 21, "%d", 123);
 	str2 = ft_itoa(123);
-	test[1] = strcmp(str1, str2);
+	test[1] = cmp(str1, str2);
 	free(str2);
 	snprintf(str1, 21, "%d", -123);
 	str2 = ft_itoa(-123);
-	test[2] = strcmp(str1, str2);
+	test[2] = cmp(str1, str2);
 	free(str2);
 	snprintf(str1, 21, "%d", -9810);
 	str2 = ft_itoa(-9810);
-	test[3] = strcmp(str1, str2);
+	test[3] = cmp(str1, str2);
 	free(str2);
 	snprintf(str1, 21, "%d", 189);
 	str2 = ft_itoa(189);
-	test[4] = strcmp(str1, str2);
+	test[4] = cmp(str1, str2);
 	free(str2);
 	snprintf(str1, 21, "%d", INT_MAX);
 	str2 = ft_itoa(INT_MAX);
-	test[5] = strcmp(str1, str2);
+	test[5] = cmp(str1, str2);
 	free(str2);
 	snprintf(str1, 21, "%d", INT_MIN);
 	str2 = ft_itoa(INT_MIN);
-	test[6] = strcmp(str1, str2);
+	test[6] = cmp(str1, str2);
 	print_test_results(test, ctrl, 7, NULL);
 }
 
@@ -467,20 +495,20 @@ static void	test_memccpy(void)
 	init(ctrl, 6, 0);
 	ptr1 = memccpy(dst1, src1, '0', 4);
 	ptr2 = ft_memccpy(dst2, src2, '0', 4);
-	test[0] = strcmp(dst1, dst2);
+	test[0] = cmp(dst1, dst2);
 	if (ptr1 == ptr2)
 		test[1] = 0;
 	else
 		test[1] = 1;
 	memccpy(dst1, src1, '0', 5);
 	ft_memccpy(dst2, src2, '0', 5);
-	test[2] = strcmp(dst1, dst2);
+	test[2] = cmp(dst1, dst2);
 	memccpy(dst3, src3, '\200', 12);
 	ft_memccpy(dst4, src4, '\200', 12);
-	test[3] = strcmp(dst3, dst4);
+	test[3] = cmp(dst3, dst4);
 	memccpy(dst3, src3, 'r', 12);
 	ft_memccpy(dst4, src4, 'r', 12);
-	test[4] = strcmp(dst3, dst4);
+	test[4] = cmp(dst3, dst4);
 	ptr1 = memccpy(dst3, src3, 'g', 12);
 	ptr2 = ft_memccpy(dst3, src3, 'g', 12);
 	if (ptr1 == ptr2)
@@ -536,7 +564,7 @@ static void	test_memcpy(void)
 		exit(EXIT_FAILURE);
 	}
 	ctrl[0] = 0;
-	test[0] = strcmp(memcpy(str2, str1, strlen(str1) + 1), ft_memcpy(str3, str1, strlen(str1) + 1));
+	test[0] = cmp(memcpy(str2, str1, strlen(str1) + 1), ft_memcpy(str3, str1, strlen(str1) + 1));
 	free(str2);
 	free(str3);
 	print_test_results(test, ctrl, 1, NULL);
@@ -579,9 +607,9 @@ static void	test_memmove(void)
 	str2[n - 1] = '\0';
 	str3[n - 1] = '\0';
 	str4[n - 1] = '\0';
-	test[0] = strcmp(memmove(str1 + 1, str1, n), ft_memmove(str2 + 1, str2, n));
-	test[1] = strcmp(memmove(str3, str3 + 1, n), ft_memmove(str4, str4 + 1, n));
-	test[2] = strcmp(memmove(str1, str1, n), ft_memmove(str2, str2, n));
+	test[0] = cmp(memmove(str1 + 1, str1, n), ft_memmove(str2 + 1, str2, n));
+	test[1] = cmp(memmove(str3, str3 + 1, n), ft_memmove(str4, str4 + 1, n));
+	test[2] = cmp(memmove(str1, str1, n), ft_memmove(str2, str2, n));
 	print_test_results(test, ctrl, 3, NULL);
 }
 
@@ -593,10 +621,10 @@ static void	test_memset(void)
 
 	print_test_name("memset");
 	init(ctrl, 4, 0);
-	test[0] = strcmp(memset(str1, '-', 0), ft_memset(str2, '-', 0));
-	test[1] = strcmp(memset(str1, '-', 1), ft_memset(str2, '-', 1));
-	test[2] = strcmp(memset(str1, '-', 5), ft_memset(str2, '-', 5));
-	test[3] = strcmp(memset(str1, 0, 5), ft_memset(str2, 0, 5));
+	test[0] = cmp(memset(str1, '-', 0), ft_memset(str2, '-', 0));
+	test[1] = cmp(memset(str1, '-', 1), ft_memset(str2, '-', 1));
+	test[2] = cmp(memset(str1, '-', 5), ft_memset(str2, '-', 5));
+	test[3] = cmp(memset(str1, 0, 5), ft_memset(str2, 0, 5));
 	print_test_results(test, ctrl, 4, NULL);
 }
 
@@ -614,7 +642,7 @@ static void	test_strcat(void)
 	strcpy(dst1, src);
 	strcpy(dst2, src);
 	ctrl[0] = 0;
-	test[0] = strcmp(strcat(dst1, src), ft_strcat(dst2, src));
+	test[0] = cmp(strcat(dst1, src), ft_strcat(dst2, src));
 	free(dst1);
 	free(dst2);
 	print_test_results(test, ctrl, 1, NULL);
@@ -678,24 +706,24 @@ static void	test_strcmp(void)
 	
 	/* This test takes only the sign into account. */
 	print_test_name("strcmp");
-	ctrl[0] = strcmp("test string", "test string");
-	ctrl[1] = strcmp("test string", "test spring");
-	ctrl[2] = strcmp("test string", "test string ");
-	ctrl[3] = strcmp("test string ", "test string");
-	ctrl[4] = strcmp("", "test");
-	ctrl[5] = strcmp("test", "");
-	ctrl[6] = strcmp("", "");
-	ctrl[7] = strcmp("\200\230\100\255", "\200\230\100\255");
-	ctrl[8] = strcmp("\200\230\100\255", "\0\230\100\255");
-	test[0] = ft_strcmp("test string", "test string");
-	test[1] = ft_strcmp("test string", "test spring");
-	test[2] = ft_strcmp("test string", "test string ");
-	test[3] = ft_strcmp("test string ", "test string");
-	test[4] = ft_strcmp("", "test");
-	test[5] = ft_strcmp("test", "");
-	test[6] = ft_strcmp("", "");
-	test[7] = ft_strcmp("\200\230\100\255", "\200\230\100\255");
-	test[8] = ft_strcmp("\200\230\100\255", "\0\230\100\255");
+	ctrl[0] = cmp("test string", "test string");
+	ctrl[1] = cmp("test string", "test spring");
+	ctrl[2] = cmp("test string", "test string ");
+	ctrl[3] = cmp("test string ", "test string");
+	ctrl[4] = cmp("", "test");
+	ctrl[5] = cmp("test", "");
+	ctrl[6] = cmp("", "");
+	ctrl[7] = cmp("\200\230\100\255", "\200\230\100\255");
+	ctrl[8] = cmp("\200\230\100\255", "\0\230\100\255");
+	test[0] = ft_cmp("test string", "test string");
+	test[1] = ft_cmp("test string", "test spring");
+	test[2] = ft_cmp("test string", "test string ");
+	test[3] = ft_cmp("test string ", "test string");
+	test[4] = ft_cmp("", "test");
+	test[5] = ft_cmp("test", "");
+	test[6] = ft_cmp("", "");
+	test[7] = ft_cmp("\200\230\100\255", "\200\230\100\255");
+	test[8] = ft_cmp("\200\230\100\255", "\0\230\100\255");
 	test_sign(test, ctrl, 9);
 	print_test_results(test, ctrl, 9, NULL);
 }
@@ -712,7 +740,7 @@ static void	test_strcpy(void)
 		perror("malloc() failed: ");
 		exit(EXIT_FAILURE);
 	}
-	test[0] = strcmp(strcpy(dst1, src1), ft_strcpy(dst2, src1));
+	test[0] = cmp(strcpy(dst1, src1), ft_strcpy(dst2, src1));
 	ft_strcpy(dst1, src2);
 	if (dst1[strlen(src2)])
 		test[1] = 1;
@@ -757,7 +785,7 @@ static void	test_strdup(void)
 	init(ctrl, 3, 0);
 	init(test, 3, 1);
 	dst = ft_strdup(src);
-	test[0] = strcmp(src, dst);
+	test[0] = cmp(src, dst);
 	if (!dst[strlen(src)])
 		test[1] = 0;
 	free(dst);
@@ -781,15 +809,15 @@ static void	test_strequ(void)
 	test[10] = ft_strequ("test", NULL);
 	test[11] = ft_strequ(NULL, "test");
 #endif
-	ctrl[0] = strcmp("test string", "test string");
-	ctrl[1] = strcmp("test string", "test spring");
-	ctrl[2] = strcmp("test string", "test string ");
-	ctrl[3] = strcmp("test string ", "test string");
-	ctrl[4] = strcmp("", "test");
-	ctrl[5] = strcmp("test", "");
-	ctrl[6] = strcmp("", "");
-	ctrl[7] = strcmp("\200\230\100\255", "\200\230\100\255");
-	ctrl[8] = strcmp("\200\230\100\255", "\0\230\100\255");
+	ctrl[0] = cmp("test string", "test string");
+	ctrl[1] = cmp("test string", "test spring");
+	ctrl[2] = cmp("test string", "test string ");
+	ctrl[3] = cmp("test string ", "test string");
+	ctrl[4] = cmp("", "test");
+	ctrl[5] = cmp("test", "");
+	ctrl[6] = cmp("", "");
+	ctrl[7] = cmp("\200\230\100\255", "\200\230\100\255");
+	ctrl[8] = cmp("\200\230\100\255", "\0\230\100\255");
 	test[0] = ft_strequ("test string", "test string");
 	test[1] = ft_strequ("test string", "test spring");
 	test[2] = ft_strequ("test string", "test string ");
@@ -821,9 +849,9 @@ static void	test_striter(void)
 #endif
 	init(ctrl, 2, 0);
 	ft_striter(str1, &f_iter);
-	test[0] = strcmp(str1, "");
+	test[0] = cmp(str1, "");
 	ft_striter(str2, &f_iter);
-	test[1] = strcmp(str2, "bcdefgh");
+	test[1] = cmp(str2, "bcdefgh");
 	print_test_results(test, ctrl, 2, NULL);
 }
 
@@ -841,9 +869,9 @@ static void	test_striteri(void)
 #endif
 	init(ctrl, 2, 0);
 	ft_striteri(str1, &f_iteri);
-	test[0] = strcmp(str1, "");
+	test[0] = cmp(str1, "");
 	ft_striteri(str2, &f_iteri);
-	test[1] = strcmp(str2, "acegikm");
+	test[1] = cmp(str2, "acegikm");
 	print_test_results(test, ctrl, 2, NULL);
 }
 
@@ -867,28 +895,26 @@ static void	test_strjoin(void)
 	/* I chose to return a copy of the non NUL string */
 	/* ( => behave like a strdup)                     */
 	str = ft_strjoin(NULL, "test");
-	if (str)
-		test[6] = strcmp("test", str);
+	test[6] = cmp("test", str);
 	free(str);
 	str = ft_strjoin("test", NULL);
-	if (str)
-		test[7] = strcmp("test", str);
+	test[7] = cmp("test", str);
 	free(str);
 #endif
 	str = ft_strjoin("test", "string");
-	test[0] = strcmp("teststring", str);
+	test[0] = cmp("teststring", str);
 	free(str);
 	str = ft_strjoin("O", "K");
-	test[1] = strcmp("OK", str);
+	test[1] = cmp("OK", str);
 	free(str);
 	str = ft_strjoin("test", "");
-	test[2] = strcmp("test", str);
+	test[2] = cmp("test", str);
 	free(str);
 	str = ft_strjoin("", "test");
-	test[3] = strcmp("test", str);
+	test[3] = cmp("test", str);
 	free(str);
 	str = ft_strjoin("", "");
-	test[4] = strcmp("", str);
+	test[4] = cmp("", str);
 	free(str);
 	print_test_results(test, ctrl, 8, warning);
 }
@@ -912,7 +938,7 @@ static void	test_strlcat(void)
 	test[0] = strlcat(dst1, src, n / 2) - ft_strlcat(dst2, src, n / 2);
 	strlcat(dst1, src, n);
 	ft_strlcat(dst2, src, n);
-	test[1] = strcmp(dst1, dst2);
+	test[1] = cmp(dst1, dst2);
 	free(dst1);
 	free(dst2);
 	n = n * 2 + n / 2;
@@ -925,10 +951,10 @@ static void	test_strlcat(void)
 	strcpy(dst2, src);
 	strlcat(dst1, src, n);
 	ft_strlcat(dst2, src, n);
-	test[2] = strcmp(dst1, dst2);
+	test[2] = cmp(dst1, dst2);
 	strlcat(dst1, src, n);
 	ft_strlcat(dst2, src, n);
-	test[3] = strcmp(dst1, dst2);
+	test[3] = cmp(dst1, dst2);
 	free(dst1);
 	free(dst2);
 	print_test_results(test, ctrl, 4, NULL);
@@ -965,11 +991,11 @@ static void	test_strmap(void)
 		test[7] = 0;
 #endif
 	ptr1 = ft_strmap(str1, &f_map);
-	test[0] = strcmp(str1, "");
-	test[1] = strcmp(ptr1, "");
+	test[0] = cmp(str1, "");
+	test[1] = cmp(ptr1, "");
 	ptr2 = ft_strmap(str2, &f_map);
-	test[2] = strcmp(str2, "abcdefg");
-	test[3] = strcmp(ptr2, "bcdefgh");
+	test[2] = cmp(str2, "abcdefg");
+	test[3] = cmp(ptr2, "bcdefgh");
 	free(ptr1);
 	free(ptr2);
 #ifdef SEGFAULT_ME
@@ -998,11 +1024,11 @@ static void	test_strmapi(void)
 		test[7] = 0;
 #endif
 	ptr1 = ft_strmapi(str1, &f_mapi);
-	test[0] = strcmp(str1, "");
-	test[1] = strcmp(ptr1, "");
+	test[0] = cmp(str1, "");
+	test[1] = cmp(ptr1, "");
 	ptr2 = ft_strmapi(str2, &f_mapi);
-	test[2] = strcmp(str2, "abcdefg");
-	test[3] = strcmp(ptr2, "acegikm");
+	test[2] = cmp(str2, "abcdefg");
+	test[3] = cmp(ptr2, "acegikm");
 	free(ptr1);
 	free(ptr2);
 #ifdef SEGFAULT_ME
@@ -1026,9 +1052,9 @@ static void	test_strncat(void)
 	}
 	strcpy(dst1, src);
 	strcpy(dst2, src);
-	test[0] = strcmp(strncat(dst1, src, 0), ft_strncat(dst2, src, 0));
-	test[1] = strcmp(strncat(dst1, src, 6), ft_strncat(dst2, src, 6));
-	test[2] = strcmp(strncat(dst1, src, 50), ft_strncat(dst2, src, 50));
+	test[0] = cmp(strncat(dst1, src, 0), ft_strncat(dst2, src, 0));
+	test[1] = cmp(strncat(dst1, src, 6), ft_strncat(dst2, src, 6));
+	test[2] = cmp(strncat(dst1, src, 50), ft_strncat(dst2, src, 50));
 	free(dst1);
 	free(dst2);
 	print_test_results(test, ctrl, 3, NULL);
@@ -1051,32 +1077,32 @@ static void	test_strncmp(void)
 	
 	/* This test takes only the sign into account. */
 	print_test_name("strncmp");
-	ctrl[0] = strncmp("test string", "test string", 0);
-	ctrl[1] = strncmp("test string", "test string", 30);
-	ctrl[2] = strncmp("test string", "test spring", 6);
-	ctrl[3] = strncmp("test string", "test spring", 7);
-	ctrl[4] = strncmp("test string", "test spring", 8);
-	ctrl[5] = strncmp("test string", "test string    ", 12);
-	ctrl[6] = strncmp("test string", "test string    ", 30);
-	ctrl[7] = strncmp("", "test", 0);
-	ctrl[8] = strncmp("", "", 0);
-	ctrl[9] = strncmp("", "", 1);
-	ctrl[10] = strncmp("", "", 2);
-	ctrl[11] = strncmp("\200\230\100\255", "\200\230\100\255", 5);
-	ctrl[12] = strncmp("\200\230\100\255", "\200\0\100\255", 5);
-	test[0] = ft_strncmp("test string", "test string", 0);
-	test[1] = ft_strncmp("test string", "test string", 30);
-	test[2] = ft_strncmp("test string", "test spring", 6);
-	test[3] = ft_strncmp("test string", "test spring", 7);
-	test[4] = ft_strncmp("test string", "test spring", 8);
-	test[5] = ft_strncmp("test string", "test string    ", 12);
-	test[6] = ft_strncmp("test string", "test string    ", 30);
-	test[7] = ft_strncmp("", "test", 0);
-	test[8] = ft_strncmp("", "", 0);
-	test[9] = ft_strncmp("", "", 1);
-	test[10] = ft_strncmp("", "", 2);
-	test[11] = ft_strncmp("\200\230\100\255", "\200\230\100\255", 5);
-	test[12] = ft_strncmp("\200\230\100\255", "\200\0\100\255", 5);
+	ctrl[0] = ncmp("test string", "test string", 0);
+	ctrl[1] = ncmp("test string", "test string", 30);
+	ctrl[2] = ncmp("test string", "test spring", 6);
+	ctrl[3] = ncmp("test string", "test spring", 7);
+	ctrl[4] = ncmp("test string", "test spring", 8);
+	ctrl[5] = ncmp("test string", "test string    ", 12);
+	ctrl[6] = ncmp("test string", "test string    ", 30);
+	ctrl[7] = ncmp("", "test", 0);
+	ctrl[8] = ncmp("", "", 0);
+	ctrl[9] = ncmp("", "", 1);
+	ctrl[10] = ncmp("", "", 2);
+	ctrl[11] = ncmp("\200\230\100\255", "\200\230\100\255", 5);
+	ctrl[12] = ncmp("\200\230\100\255", "\200\0\100\255", 5);
+	test[0] = ft_ncmp("test string", "test string", 0);
+	test[1] = ft_ncmp("test string", "test string", 30);
+	test[2] = ft_ncmp("test string", "test spring", 6);
+	test[3] = ft_ncmp("test string", "test spring", 7);
+	test[4] = ft_ncmp("test string", "test spring", 8);
+	test[5] = ft_ncmp("test string", "test string    ", 12);
+	test[6] = ft_ncmp("test string", "test string    ", 30);
+	test[7] = ft_ncmp("", "test", 0);
+	test[8] = ft_ncmp("", "", 0);
+	test[9] = ft_ncmp("", "", 1);
+	test[10] = ft_ncmp("", "", 2);
+	test[11] = ft_ncmp("\200\230\100\255", "\200\230\100\255", 5);
+	test[12] = ft_ncmp("\200\230\100\255", "\200\0\100\255", 5);
 	test_sign(test, ctrl, 13);
 	print_test_results_summary(test, ctrl, 13);
 }
@@ -1114,19 +1140,19 @@ static void	test_strnequ(void)
 	test[14] = ft_strequ("test", NULL);
 	test[15] = ft_strequ(NULL, "test");
 #endif
-	ctrl[0] = strncmp("test string", "test string", 0);
-	ctrl[1] = strncmp("test string", "test string", 30);
-	ctrl[2] = strncmp("test string", "test spring", 6);
-	ctrl[3] = strncmp("test string", "test spring", 7);
-	ctrl[4] = strncmp("test string", "test spring", 8);
-	ctrl[5] = strncmp("test string", "test string    ", 12);
-	ctrl[6] = strncmp("test string", "test string    ", 30);
-	ctrl[7] = strncmp("", "test", 0);
-	ctrl[8] = strncmp("", "", 0);
-	ctrl[9] = strncmp("", "", 1);
-	ctrl[10] = strncmp("", "", 2);
-	ctrl[11] = strncmp("\200\230\100\255", "\200\230\100\255", 5);
-	ctrl[12] = strncmp("\200\230\100\255", "\200\0\100\255", 5);
+	ctrl[0] = ncmp("test string", "test string", 0);
+	ctrl[1] = ncmp("test string", "test string", 30);
+	ctrl[2] = ncmp("test string", "test spring", 6);
+	ctrl[3] = ncmp("test string", "test spring", 7);
+	ctrl[4] = ncmp("test string", "test spring", 8);
+	ctrl[5] = ncmp("test string", "test string    ", 12);
+	ctrl[6] = ncmp("test string", "test string    ", 30);
+	ctrl[7] = ncmp("", "test", 0);
+	ctrl[8] = ncmp("", "", 0);
+	ctrl[9] = ncmp("", "", 1);
+	ctrl[10] = ncmp("", "", 2);
+	ctrl[11] = ncmp("\200\230\100\255", "\200\230\100\255", 5);
+	ctrl[12] = ncmp("\200\230\100\255", "\200\0\100\255", 5);
 	test[0] = ft_strnequ("test string", "test string", 0);
 	test[1] = ft_strnequ("test string", "test string", 30);
 	test[2] = ft_strnequ("test string", "test spring", 6);
@@ -1243,13 +1269,13 @@ static void	test_strrchr(void)
 /* 		test[2] = 0; */
 /* #endif */
 /* 	tab = ft_strsplit("test", '*'); */
-/* 	test[0] = strcmp("test", tab[0]); */
+/* 	test[0] = cmp("test", tab[0]); */
 /* 	test[1] = 1; */
 /* 	if (!tab[1]) */
 /* 		test[1] = 0; */
 /* 	free_tab(tab); */
 /* //	tab = ft_strsplit(" test"); */
-/* //	test[2] = strcmp("test", tab); */
+/* //	test[2] = cmp("test", tab); */
 /* //	free_tab(tab); */
 /* #ifdef SEGFAULT_ME */
 /* 	print_test_results_summary(test, ctrl, 3); */
@@ -1298,11 +1324,11 @@ static void	test_strsub(void)
 	dst = ft_strsub(src, 0, strlen(src));
 	if (dst < src || dst > src + strlen(src))
 		test[0] = 0;
-	test[1] = strcmp(src, dst);
+	test[1] = cmp(src, dst);
 	free(dst);
-	test[2] = strcmp("t s", ft_strsub("test string", 3, 3));
-	test[3] = strcmp("g", ft_strsub("test string", 10, 1));
-	test[4] = strcmp("g", ft_strsub("g", 0, 1));
+	test[2] = cmp("t s", ft_strsub("test string", 3, 3));
+	test[3] = cmp("g", ft_strsub("test string", 10, 1));
+	test[4] = cmp("g", ft_strsub("g", 0, 1));
 	/* You're encourage to test this one more thouroughly but  */
 	/* since behaviour is undefined when start and size do not */
 	/* point to a valid string, I can't force one on you.      */
@@ -1312,12 +1338,10 @@ static void	test_strsub(void)
 	/* Just ignore them if you would have your ft_strsub       */
 	/* behave differently (for example return "\0")            */
 	dst = ft_strsub("test string", 10, 2);
-	if (dst)
-		test[5] = strcmp("g", dst);
+	test[5] = cmp("g", dst);
 	free(dst);
 	dst = ft_strsub("g", 0, 2);
-	if (dst)
-		test[6] = strcmp("g", dst);
+	test[6] = cmp("g", dst);
 	free(dst);
 	dst = ft_strsub("", 0, 1);
 	if (!dst)
@@ -1344,52 +1368,52 @@ static void	test_strtrim(void)
 		test[16] = 0;
 #endif
 	dst = ft_strtrim("test");
-	test[0] = strcmp("test", dst);
+	test[0] = cmp("test", dst);
 	test[1] = 1;
 	if (dst != src)
 		test[1] = 0;
 	free(dst);
 	dst = ft_strtrim(" test");
-	test[2] = strcmp("test", dst);
+	test[2] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("test ");
-	test[3] = strcmp("test", dst);
+	test[3] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("\ntest");
-	test[4] = strcmp("test", dst);
+	test[4] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("test\n");
-	test[5] = strcmp("test", dst);
+	test[5] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("\ttest");
-	test[6] = strcmp("test", dst);
+	test[6] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("test\t");
-	test[7] = strcmp("test", dst);
+	test[7] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("    test        ");
-	test[8] = strcmp("test", dst);
+	test[8] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("    test\n");
-	test[9] = strcmp("test", dst);
+	test[9] = cmp("test", dst);
 	free(dst);
 	dst = ft_strtrim("   \n  \t \nt\n");
-	test[10] = strcmp("t", dst);
+	test[10] = cmp("t", dst);
 	free(dst);
 	dst = ft_strtrim("             t\n  \t \n  t\n ");
-	test[11] = strcmp("t\n  \t \n  t", dst);
+	test[11] = cmp("t\n  \t \n  t", dst);
 	free(dst);
 	dst = ft_strtrim("t t");
-	test[12] = strcmp("t t", dst);
+	test[12] = cmp("t t", dst);
 	free(dst);
 	dst = ft_strtrim("               \nt\n");
-	test[13] = strcmp("t", dst);
+	test[13] = cmp("t", dst);
 	free(dst);
 	dst = ft_strtrim("");
-	test[14] = strcmp("", dst);
+	test[14] = cmp("", dst);
 	free(dst);
 	dst = ft_strtrim("          \n        \n \t");
-	test[15] = strcmp("", dst);
+	test[15] = cmp("", dst);
 	free(dst);
 #ifdef SEGFAULT_ME
 	print_test_results_summary(test, ctrl, 17);
