@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/10 16:14:34 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/10 17:21:41 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -420,6 +420,21 @@ static void	test_isprint(void)
 	print_test_results_summary(test, ctrl, 1024);
 }
 
+static void	test_isspace(void)
+{
+	int		i, test[1024], ctrl[1024];
+
+	print_test_name("isspace");
+	i = 0;
+	while (i < 1024)
+	{
+		ctrl[i] = isspace(i);
+		test[i] = ft_isspace(i);
+		++i;
+	}
+	print_test_results_summary(test, ctrl, 1024);
+}
+
 static void	test_itoa(void)
 {
 	int		test[7], ctrl[7];
@@ -496,18 +511,18 @@ static void	test_memccpy(void)
 	init(test, 6, 1);
 	ptr1 = memccpy(dst1, src1, '0', 4);
 	ptr2 = ft_memccpy(dst2, src2, '0', 4);
-	test[0] = cmp(dst1, dst2);
+	test[0] = memcmp(dst1, dst2, 27);
 	if (ptr1 == ptr2)
 		test[1] = 0;
 	memccpy(dst1, src1, '0', 5);
 	ft_memccpy(dst2, src2, '0', 5);
-	test[2] = cmp(dst1, dst2);
+	test[2] = memcmp(dst1, dst2, 27);
 	memccpy(dst3, src3, '\200', 12);
 	ft_memccpy(dst4, src4, '\200', 12);
-	test[3] = cmp(dst3, dst4);
+	test[3] = memcmp(dst3, dst4, 27);
 	memccpy(dst3, src3, 'r', 12);
 	ft_memccpy(dst4, src4, 'r', 12);
-	test[4] = cmp(dst3, dst4);
+	test[4] = memcmp(dst3, dst4, 27);
 	ptr1 = memccpy(dst3, src3, 'g', 12);
 	ptr2 = ft_memccpy(dst3, src3, 'g', 12);
 	if (ptr1 == ptr2)
@@ -634,10 +649,10 @@ static void	test_memset(void)
 	print_test_name("memset");
 	init(ctrl, 4, 0);
 	init(test, 4, 1);
-	test[0] = cmp(memset(str1, '-', 0), ft_memset(str2, '-', 0));
-	test[1] = cmp(memset(str1, '-', 1), ft_memset(str2, '-', 1));
-	test[2] = cmp(memset(str1, '-', 5), ft_memset(str2, '-', 5));
-	test[3] = cmp(memset(str1, 0, 5), ft_memset(str2, 0, 5));
+	test[0] = memcmp(memset(str1, '-', 0), ft_memset(str2, '-', 0), 15);
+	test[1] = memcmp(memset(str1, '-', 1), ft_memset(str2, '-', 1), 15);
+	test[2] = memcmp(memset(str1, '-', 5), ft_memset(str2, '-', 5), 15);
+	test[3] = memcmp(memset(str1, 0, 5), ft_memset(str2, 0, 5), 15);
 	print_test_results(test, ctrl, 4, NULL);
 }
 
@@ -972,6 +987,38 @@ static void	test_strlcat(void)
 	print_test_results(test, ctrl, 4, NULL);
 }
 
+static void	test_strlcpy(void)
+{
+	int		test[6], ctrl[6];
+	char	*dst1, *dst2, src[]="test string";
+
+	print_test_name("strlcpy");
+	init(ctrl, 6, 0);
+	if (!(dst1 = (char *)malloc(sizeof(*dst1) * 20)) || !(dst2 = (char *)malloc(sizeof(*dst2) * 20)))
+	{
+		perror("malloc() failed: ");
+		exit(EXIT_FAILURE);
+	}
+	strlcpy(dst1, src, 20);
+	ft_strlcpy(dst2, src, 20);
+	test[0] = cmp(dst1, dst2);
+	strlcpy(dst1, src, 0);
+	ft_strlcpy(dst2, src, 0);
+	test[1] = cmp(dst1, dst2);
+	strlcpy(dst1, src, 5);
+	ft_strlcpy(dst2, src, 5);
+	test[2] = cmp(dst1, dst2);
+	strlcpy(dst1, src, 2);
+	ft_strlcpy(dst2, src, 2);
+	test[3] = cmp(dst1, dst2);
+	ctrl[5] = strlcpy(dst1, src, 1);
+	test[5] = ft_strlcpy(dst2, src, 1);
+	test[4] = cmp(dst1, dst2);
+	free(dst1);
+	free(dst2);
+	print_test_results(test, ctrl, 6, NULL);
+}
+
 static void	test_strlen(void)
 {
 	int		test[2], ctrl[2];
@@ -1194,23 +1241,25 @@ static void	test_strnequ(void)
 
 static void	test_strnew(void)
 {
-	int		test[3], ctrl[3], warning[]={1, -1};
+	int		test[3], ctrl[3], warning[]={2, -1};
 	char	*str;
 
 	print_test_name("strnew");
 	init(ctrl, 3, 0);
 	init(test, 3, 1);
+#ifdef SEGFAULT_ME
+	if (!(str = ft_strnew(SIZE_MAX)))
+		test[2] = 0;
+	free(str);
+#endif
 	ctrl[0] = 512;
 	str = ft_strnew(ctrl[0]);
 	test[0] = 0;
 	while (test[0] < ctrl[0] && !(*str))
 		++(test[0]);
 	free(str);
-	if (!(str = ft_strnew(SIZE_MAX)))
-		test[1] = 0;
-	free(str);
 	if (!(str = ft_strnew(SIZE_MAX - 1)))
-		test[2] = 0;
+		test[1] = 0;
 	free(str);
 	print_test_results(test, ctrl, 3, warning);
 }
@@ -1477,6 +1526,7 @@ int			main(void)
 	test_isascii();
 	test_isdigit();
 	test_isprint();
+//	test_isspace(); /* not required */
 	test_itoa();
 	test_memalloc();
 	test_memccpy();
@@ -1498,6 +1548,7 @@ int			main(void)
 	test_striteri();
 	test_strjoin();
 	test_strlcat();
+//	test_strlcpy(); /* not required */
 	test_strlen();
 	test_strmap();
 	test_strmapi();
