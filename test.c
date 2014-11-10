@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/10 13:38:20 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/10 14:43:08 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,28 +185,28 @@ static int	cmp(char *str1, char *str2)
 {
 	if (str1 && str2)
 		return (strcmp(str1, str2));
-	return (-1);
+	return (-42);
 }
 
 static int	ft_cmp(char *str1, char *str2)
 {
 	if (str1 && str2)
 		return (ft_strcmp(str1, str2));
-	return (-1);
+	return (-42);
 }
 
 static int	ncmp(char *str1, char *str2, size_t n)
 {
 	if (str1 && str2)
 		return (strncmp(str1, str2, n));
-	return (-1);
+	return (-42);
 }
 
 static int	ft_ncmp(char *str1, char *str2, size_t n)
 {
 	if (str1 && str2)
 		return (ft_strncmp(str1, str2, n));
-	return (-1);
+	return (-42);
 }
 
 static void	test_sign(int test[], int ctrl[], int n)
@@ -493,13 +493,12 @@ static void	test_memccpy(void)
 
 	print_test_name("memccpy");
 	init(ctrl, 6, 0);
+	init(test, 6, 1);
 	ptr1 = memccpy(dst1, src1, '0', 4);
 	ptr2 = ft_memccpy(dst2, src2, '0', 4);
 	test[0] = cmp(dst1, dst2);
 	if (ptr1 == ptr2)
 		test[1] = 0;
-	else
-		test[1] = 1;
 	memccpy(dst1, src1, '0', 5);
 	ft_memccpy(dst2, src2, '0', 5);
 	test[2] = cmp(dst1, dst2);
@@ -603,6 +602,7 @@ static void	test_memmove(void)
 
 	print_test_name("memmove");
 	init(ctrl, 3, 0);
+	init(test, 3, 1);
 	str1[n - 1] = '\0';
 	str2[n - 1] = '\0';
 	str3[n - 1] = '\0';
@@ -621,6 +621,7 @@ static void	test_memset(void)
 
 	print_test_name("memset");
 	init(ctrl, 4, 0);
+	init(test, 4, 1);
 	test[0] = cmp(memset(str1, '-', 0), ft_memset(str2, '-', 0));
 	test[1] = cmp(memset(str1, '-', 1), ft_memset(str2, '-', 1));
 	test[2] = cmp(memset(str1, '-', 5), ft_memset(str2, '-', 5));
@@ -735,6 +736,7 @@ static void	test_strcpy(void)
 
 	print_test_name("strcpy");
 	init(ctrl, 2, 0);
+	init(test, 2, 1);
 	if (!(dst1 = malloc(strlen(src1) + 1)) || !(dst2 = malloc(strlen(src1) + 1)))
 	{
 		perror("malloc() failed: ");
@@ -742,9 +744,7 @@ static void	test_strcpy(void)
 	}
 	test[0] = cmp(strcpy(dst1, src1), ft_strcpy(dst2, src1));
 	ft_strcpy(dst1, src2);
-	if (dst1[strlen(src2)])
-		test[1] = 1;
-	else
+	if (!dst1[strlen(src2)])
 		test[1] = 0;
 	free(dst1);
 	free(dst2);
@@ -1109,11 +1109,12 @@ static void	test_strncmp(void)
 
 static void	test_strncpy(void)
 {
-	int		test[1], ctrl[1];
+	int		test[2], ctrl[2];
 	size_t	n;
 	char	*dst1, *dst2, src[]="test string";
 
 	print_test_name("strncpy");
+	init(ctrl, 2, 0);
 	n = strlen(src) + 4;
 	if (!(dst1 = malloc(sizeof(*dst1) * n)) || !(dst2 = malloc(sizeof(*dst2) * n)))
 	{
@@ -1122,9 +1123,14 @@ static void	test_strncpy(void)
 	}
 	memset(dst1, 'a', sizeof(*dst1) * n);
 	memset(dst2, 'a', sizeof(*dst2) * n);
-	ctrl[0] = 0;
-	test[0] = memcmp(strncpy(dst1, src, n), ft_strncpy(dst2, src, n), sizeof(*dst1) * n);
-	print_test_results(test, ctrl, 1, NULL);
+	dst1[n - 1] = '\0';
+	dst2[n - 1] = '\0';
+	test[0] = memcmp(strncpy(dst1, src, 3), ft_strncpy(dst2, src, n), 3);
+	memset(dst1, 'a', sizeof(*dst1) * n);
+	memset(dst2, 'a', sizeof(*dst2) * n);
+	test[1] = memcmp(strncpy(dst1, src, n), ft_strncpy(dst2, src, n), n);
+	
+	print_test_results(test, ctrl, 2, NULL);
 }
 
 static void	test_strnequ(void)
@@ -1176,27 +1182,25 @@ static void	test_strnequ(void)
 
 static void	test_strnew(void)
 {
-	int		test[3], ctrl[3];
+	int		test[3], ctrl[3], warning[]={1, -1};
 	char	*str;
 
 	print_test_name("strnew");
+	init(ctrl, 3, 0);
+	init(test, 3, 1);
 	ctrl[0] = 512;
 	str = ft_strnew(ctrl[0]);
 	test[0] = 0;
 	while (test[0] < ctrl[0] && !(*str))
 		++(test[0]);
 	free(str);
-	ctrl[1] = 0;
-	test[1] = 1;
 	if (!(str = ft_strnew(SIZE_MAX)))
 		test[1] = 0;
 	free(str);
-	ctrl[2] = 0;
-	test[2] = 1;
 	if (!(str = ft_strnew(SIZE_MAX - 1)))
 		test[2] = 0;
 	free(str);
-	print_test_results(test, ctrl, 3, NULL);
+	print_test_results(test, ctrl, 3, warning);
 }
 
 static void	test_strnstr(void)
