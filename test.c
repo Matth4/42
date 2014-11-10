@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/10 17:47:40 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/10 22:47:00 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,6 +209,22 @@ static int	ft_ncmp(char *str1, char *str2, size_t n)
 	return (-42);
 }
 
+static int	tabcmp(char **tab1, char **tab2)
+{
+	if (tab1 && tab2)
+	{
+		while(*tab1 && *tab2)
+		{
+			if ((cmp(*(tab1++), *(tab2++))))
+				return (1);
+		}
+		if (*tab1 != *tab2)
+			return (-12);
+		return (0);
+	}
+	return (-24);
+}
+
 static void	test_sign(int test[], int ctrl[], int n)
 {
 	int		i;
@@ -236,11 +252,26 @@ static void	test_negate(int ctrl[], int n)
 
 static void	free_tab(char **tab)
 {
+	int		i;
+
 	if (tab)
 	{
-		while (*tab)
-			free(*(tab++));
+		i = 0;
+		while (tab[i])
+			free(tab[i++]);
 		free(tab);
+	}
+}
+
+static void	free_ctrl_tab(char **tab)
+{
+	int		i;
+
+	if (tab)
+	{
+		i = 0;
+		while (tab[i])
+			free(tab[i++]);
 	}
 }
 
@@ -482,7 +513,7 @@ static void	test_memalloc(void)
 	ctrl[0] = 512;
 	if (!(ptr = ft_memalloc(ctrl[0])))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	test[0] = 0;
@@ -491,7 +522,7 @@ static void	test_memalloc(void)
 	free(ptr);
 	ctrl[1] = 0;
 	test[1] = 1;
-	if (!(ptr = ft_memalloc(SIZE_MAX - 1)))
+	if (!(ptr = ft_memalloc(SIZE_MAX)))
 		test[1] = 0;
 	free(ptr);
 	print_test_results(test, ctrl, 2, NULL);
@@ -550,7 +581,7 @@ static void	test_memchr(void)
 		test[3] = 0;
 	if (!(str2 = (char *)malloc(sizeof(*str2) * 2)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	str2[0] = '\0';
@@ -586,7 +617,7 @@ static void	test_memcpy(void)
 	init(test, 5, 1);
 	if (!(str2 = malloc(sizeof(*str2) * 20)) || !(str3 = malloc(sizeof(*str3) * 20)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	memset(str2, 'a', 20);
@@ -617,7 +648,7 @@ static void	test_memdel(void)
 #endif
 	if (!(ptr = malloc(1)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	ctrl[0] = 0;
@@ -674,7 +705,7 @@ static void	test_strcat(void)
 	print_test_name("strcat");
 	if (!(dst1 = malloc(sizeof(*dst1) * (strlen(src) + 1) * 3)) || !(dst2 = malloc(sizeof(*dst2) * (strlen(src) + 1) * 3)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	strcpy(dst1, src);
@@ -776,7 +807,7 @@ static void	test_strcpy(void)
 	init(test, 2, 1);
 	if (!(dst1 = malloc(strlen(src1) + 1)) || !(dst2 = malloc(strlen(src1) + 1)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	test[0] = cmp(strcpy(dst1, src1), ft_strcpy(dst2, src1));
@@ -801,7 +832,7 @@ static void	test_strdel(void)
 #endif
 	if (!(str = (char *)malloc(sizeof(*str) * 5)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	ctrl[0] = 0;
@@ -967,7 +998,7 @@ static void	test_strlcat(void)
 	n = (strlen(src) + 1);
 	if (!(dst1 = malloc(sizeof(*dst1) * n)) || !(dst2 = malloc(sizeof(*dst2) * n)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	strcpy(dst1, src);
@@ -981,7 +1012,7 @@ static void	test_strlcat(void)
 	n = n * 2 + n / 2;
 	if (!(dst1 = malloc(sizeof(*dst1) * n)) || !(dst2 = malloc(sizeof(*dst2) * n)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	strcpy(dst1, src);
@@ -1006,7 +1037,7 @@ static void	test_strlcpy(void)
 	init(ctrl, 6, 0);
 	if (!(dst1 = (char *)malloc(sizeof(*dst1) * 20)) || !(dst2 = (char *)malloc(sizeof(*dst2) * 20)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	strlcpy(dst1, src, 20);
@@ -1116,7 +1147,7 @@ static void	test_strncat(void)
 	init(ctrl, 3, 0);
 	if (!(dst1 = malloc(sizeof(*dst1) * 100)) || !(dst2 = malloc(sizeof(*dst2) * 100)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	strcpy(dst1, src);
@@ -1187,7 +1218,7 @@ static void	test_strncpy(void)
 	n = strlen(src) + 4;
 	if (!(dst1 = malloc(sizeof(*dst1) * n)) || !(dst2 = malloc(sizeof(*dst2) * n)))
 	{
-		perror("malloc() failed: ");
+		perror("malloc() failed");
 		exit(EXIT_FAILURE);
 	}
 	memset(dst1, 'a', sizeof(*dst1) * n);
@@ -1330,34 +1361,100 @@ static void	test_strrchr(void)
 	print_test_results(test, ctrl, 3, NULL);
 }
 
-/* static void	test_strsplit(void) */
-/* { */
-/* 	int		test[3], ctrl[3]; */
-/* 	char	**tab; */
+static void	test_strsplit(void)
+{
+	int		test[11], ctrl[11];
+	char	**tab, **ctrl_tab;
 
-/* 	print_test_name("strsplit"); */
-/* 	init(ctrl, 3, 0); */
-/* #ifdef SEGFAULT_ME */
-/* 	test[2] = 1; */
-/* 	tab = ft_strsplit(NULL, '*'); */
-/* 	if (!tab) */
-/* 		test[2] = 0; */
-/* #endif */
-/* 	tab = ft_strsplit("test", '*'); */
-/* 	test[0] = cmp("test", tab[0]); */
-/* 	test[1] = 1; */
-/* 	if (!tab[1]) */
-/* 		test[1] = 0; */
-/* 	free_tab(tab); */
-/* //	tab = ft_strsplit(" test"); */
-/* //	test[2] = cmp("test", tab); */
-/* //	free_tab(tab); */
-/* #ifdef SEGFAULT_ME */
-/* 	print_test_results_summary(test, ctrl, 3); */
-/* #else */
-/* 	print_test_results_summary(test, ctrl, 2); */
-/* #endif	 */
-/* } */
+	print_test_name("strsplit");
+	init(ctrl, 11, 0);
+	init(test, 11, 1);
+	if (!(ctrl_tab = (char **)malloc(sizeof(*ctrl_tab) * 10)))
+	{
+		perror("malloc() failed here");
+		exit(EXIT_FAILURE);
+	}
+#ifdef SEGFAULT_ME
+	tab = ft_strsplit(NULL, ' ');
+	if (!tab)
+		test[10] = 0;
+#endif
+	ctrl_tab[0] = strdup("test");
+	ctrl_tab[1] = strdup("my");
+	ctrl_tab[2] = strdup("function");
+	ctrl_tab[3] = NULL;
+	tab = ft_strsplit("       test my  function   ", ' ');
+	test[0] = tabcmp(tab, ctrl_tab);
+	if (!tab[3])
+		test[1] = 0;
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = strdup("t");
+	ctrl_tab[1] = NULL;
+	tab = ft_strsplit("t", ' ');
+	test[2] = tabcmp(tab, ctrl_tab);
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = strdup("test");
+	ctrl_tab[1] = strdup("my");
+	ctrl_tab[2] = strdup("function");
+	ctrl_tab[3] = NULL;
+	tab = ft_strsplit("test my function", ' ');
+	test[3] = tabcmp(tab, ctrl_tab);
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = strdup("test");
+	ctrl_tab[1] = strdup("my");
+	ctrl_tab[2] = strdup("function");
+	ctrl_tab[3] = NULL;
+	tab = ft_strsplit(" test my  function ", ' ');
+	test[4] = tabcmp(tab, ctrl_tab);
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = strdup("*test");
+	ctrl_tab[1] = strdup("my");
+	ctrl_tab[2] = strdup("function   ");
+	ctrl_tab[3] = NULL;
+	tab = ft_strsplit("*test\377my\377function   ", '\377');
+	test[5] = tabcmp(tab, ctrl_tab);
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = NULL;
+	tab = ft_strsplit("          ", ' ');
+	test[6] = tabcmp(tab, ctrl_tab);
+	if (test[6] == -24)
+		test[6] = 0;
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = NULL;
+	tab = ft_strsplit("", ' ');
+	test[7] = tabcmp(tab, ctrl_tab);
+	if (test[7] == -24)
+		test[7] = 0;
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = strdup("test");
+	ctrl_tab[1] = NULL;
+	tab = ft_strsplit("test", ' ');
+	test[8] = tabcmp(tab, ctrl_tab);
+	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);
+	ctrl_tab[0] = strdup("b");
+	ctrl_tab[1] = strdup("b");
+	ctrl_tab[2] = strdup("b");
+	ctrl_tab[3] = strdup("b");
+	ctrl_tab[4] = NULL;
+	tab = ft_strsplit("babababa", 'a');
+	test[9] = tabcmp(tab, ctrl_tab);
+/*	free_tab(tab);
+	free_ctrl_tab(ctrl_tab);*/
+	free(ctrl_tab);
+#ifdef SEGFAULT_ME
+	print_test_results(test, ctrl, 11, NULL);
+#else
+	print_test_results(test, ctrl, 10, NULL);
+#endif
+}
 
 static void	test_strstr(void)
 {
@@ -1569,7 +1666,7 @@ int			main(void)
 	test_strnew();
 	test_strnstr();
 	test_strrchr();
-//	test_strsplit();
+	test_strsplit();
 	test_strstr();
 	test_strsub();
 	test_strtrim();
