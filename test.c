@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/10 22:47:00 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 00:24:16 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1424,12 +1424,16 @@ static void	test_strsplit(void)
 	test[6] = tabcmp(tab, ctrl_tab);
 	if (test[6] == -24)
 		test[6] = 0;
+	if (test[6] == -12 && !(*(tab[0])) && !(tab[1]))
+		test[6] = 0;
 	free_tab(tab);
 	free_ctrl_tab(ctrl_tab);
 	ctrl_tab[0] = NULL;
 	tab = ft_strsplit("", ' ');
 	test[7] = tabcmp(tab, ctrl_tab);
 	if (test[7] == -24)
+		test[7] = 0;
+	if (test[7] == -12 && !(*(tab[0])) && !(tab[1]))
 		test[7] = 0;
 	free_tab(tab);
 	free_ctrl_tab(ctrl_tab);
