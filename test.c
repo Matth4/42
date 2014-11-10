@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/10 17:21:41 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/10 17:47:40 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -534,12 +534,12 @@ static void	test_memccpy(void)
 
 static void	test_memchr(void)
 {
-	int				test[4], ctrl[4];
-	unsigned char	str1[]="test\200string";
+	int		test[5], ctrl[5];
+	char	str1[]="test\200string", *str2;
 
 	print_test_name("memchr");
-	init(ctrl, 4, 0);
-	init(test, 4, 1);
+	init(ctrl, 5, 0);
+	init(test, 5, 1);
 	if (memchr(str1, 'a', 12) == ft_memchr(str1, 'a', 12))
 		test[0] = 0;
 	if (memchr(str1, '\200', 12) == ft_memchr(str1, '\200', 12))
@@ -548,7 +548,17 @@ static void	test_memchr(void)
 		test[2] = 0;
 	if (memchr(str1, 'g', 11) == ft_memchr(str1, 'g', 11))
 		test[3] = 0;
-	print_test_results(test, ctrl, 4, NULL);
+	if (!(str2 = (char *)malloc(sizeof(*str2) * 2)))
+	{
+		perror("malloc() failed: ");
+		exit(EXIT_FAILURE);
+	}
+	str2[0] = '\0';
+	str2[1] = 'a';
+	if (memchr(str2, 'a', 2) == ft_memchr(str2, 'a', 2))
+		test[4] = 0;
+	free(str2);
+	print_test_results(test, ctrl, 5, NULL);
 }
 
 static void	test_memcmp(void)
