@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 00:24:16 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 02:36:24 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,21 @@
 #include <unistd.h>
 #include <limits.h>
 
-#define RESET	"\e[0m"
-#define BOLD	"\e[1m"
-//#define	UNBOLD	"\e[21m" /* UNBOLD not supported by zsh */
-#define RED		"\e[31m"
-#define GREEN	"\e[32m"
-#define YELLOW	"\e[33m"
-#define BLUE	"\e[34m"
-#define MAGENTA	"\e[35m"
-#define UNCOLOR	"\e[39m"
+#define RESET	"\033[0m"
+#define BOLD	"\033[1m"
+//#define	UNBOLD	"\033[21m" /* UNBOLD not supported by zsh */
+#define RED		"\033[31m"
+#define GREEN	"\033[32m"
+#define YELLOW	"\033[33m"
+#define BLUE	"\033[34m"
+#define MAGENTA	"\033[35m"
+#define CYAN	"\033[36m"
+#define UNCOLOR	"\033[39m"
+#define ULINE	"\033[4m"
+#define UNULINE	"\033[24m"
 
 /* Comment out to remove the NULL tests */
-#define SEGFAULT_ME
+//#define SEGFAULT_ME
 /* If the test segfaults, try skipping the NULL tests */
 /* to see if they are the ones giving you a hard time */
 
@@ -317,7 +320,7 @@ static void	test_atoi(void)
 	ctrl[28] = atoi("\v123");
 	ctrl[29] = atoi("\f123");
 	ctrl[30] = atoi("\r123");
-	ctrl[31] = atoi("\e123");
+	ctrl[31] = atoi("\033123");
 	test[0] = ft_atoi("1230978");
 	test[1] = ft_atoi("test");
 	test[2] = ft_atoi("1230978");
@@ -349,7 +352,7 @@ static void	test_atoi(void)
 	test[28] = ft_atoi("\v123");
 	test[29] = ft_atoi("\f123");
 	test[30] = ft_atoi("\r123");
-	test[31] = ft_atoi("\e123");
+	test[31] = ft_atoi("\033123");
 	print_test_results_summary(test, ctrl, 32);
 }
 
@@ -450,7 +453,7 @@ static void	test_isprint(void)
 	}
 	print_test_results_summary(test, ctrl, 1024);
 }
-
+/*
 static void	test_isspace(void)
 {
 	int		i, test[1024], ctrl[1024];
@@ -465,7 +468,7 @@ static void	test_isspace(void)
 	}
 	print_test_results_summary(test, ctrl, 1024);
 }
-
+*/
 static void	test_itoa(void)
 {
 	int		test[7], ctrl[7];
@@ -866,8 +869,11 @@ static void	test_strdup(void)
 
 static void	test_strequ(void)
 {
-	int		test[12], ctrl[12], warning[]={9, -1};
-
+	int		test[12], ctrl[12];
+#ifdef SEGFAULT_ME
+	int		warning[]={9, -1};
+#endif
+	
 	print_test_name("strequ");
 #ifdef SEGFAULT_ME
 	ctrl[9] = 0;
@@ -984,7 +990,11 @@ static void	test_strjoin(void)
 	str = ft_strjoin("", "");
 	test[4] = cmp("", str);
 	free(str);
+#ifdef SEGFAULT_ME
 	print_test_results(test, ctrl, 8, warning);
+#else
+	print_test_results(test, ctrl, 5, warning);
+#endif	
 }
 
 static void	test_strlcat(void)
@@ -1027,7 +1037,7 @@ static void	test_strlcat(void)
 	free(dst2);
 	print_test_results(test, ctrl, 4, NULL);
 }
-
+/*
 static void	test_strlcpy(void)
 {
 	int		test[6], ctrl[6];
@@ -1059,7 +1069,7 @@ static void	test_strlcpy(void)
 	free(dst2);
 	print_test_results(test, ctrl, 6, NULL);
 }
-
+*/
 static void	test_strlen(void)
 {
 	int		test[2], ctrl[2];
@@ -1302,7 +1312,11 @@ static void	test_strnew(void)
 	if (!(str = ft_strnew(SIZE_MAX - 1)))
 		test[1] = 0;
 	free(str);
+#ifdef SEGFAULT_ME
 	print_test_results(test, ctrl, 3, warning);
+#else
+	print_test_results(test, ctrl, 2, warning);
+#endif
 }
 
 static void	test_strnstr(void)
@@ -1532,7 +1546,7 @@ static void	test_strsub(void)
 
 static void	test_strtrim(void)
 {
-	int		test[17], ctrl[17];
+	int		test[17], ctrl[17], warning[]={14, 15, -1};
 	char	*dst, src[]="test";
 
 	print_test_name("strtrim");
@@ -1592,9 +1606,9 @@ static void	test_strtrim(void)
 	test[15] = cmp("", dst);
 	free(dst);
 #ifdef SEGFAULT_ME
-	print_test_results_summary(test, ctrl, 17);
+	print_test_results(test, ctrl, 17, warning);
 #else
-	print_test_results_summary(test, ctrl, 16);
+	print_test_results(test, ctrl, 16, warning);
 #endif
 }
 
@@ -1630,6 +1644,11 @@ static void	test_toupper(void)
 
 int			main(void)
 {
+#ifdef SEGFAULT_ME
+	printf(ULINE"segfault tests:"UNULINE" "MAGENTA"enabled"UNCOLOR" (comment out #define SEGFAULT_ME to disable)\n");
+#else
+	printf(ULINE"segfault tests:"UNULINE" "CYAN"disabled"UNCOLOR" (if you're still segfaulting, it's on you)\n");
+#endif
 	test_atoi();
 	test_bzero();
 	test_isalnum();
