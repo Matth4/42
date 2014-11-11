@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 17:26:58 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 18:32:24 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -569,6 +569,75 @@ static void	test_lstnew(void)
 	print_test_results(test, ctrl, 11, warning);
 }
 
+static void	test_lstadd(void)
+{
+	int		test[2], ctrl[2];
+	t_list	*lst;
+
+	print_test_name("lstadd");
+	init(ctrl, 2, 0);
+	init(test, 2, 1);
+#ifdef SEGFAULT_ME
+	lst = ft_lstnew("test string", sizeof(char) * 12);
+	ft_lstadd(NULL, NULL);
+	ft_lstadd(NULL, lst);
+	free(lst->content);
+	free(lst);
+	ft_lstadd(&lst, NULL);
+#endif
+	lst = NULL;
+	ft_lstadd(&lst, ft_lstnew("test2", sizeof(char) * 6));
+	ft_lstadd(&lst, ft_lstnew("test1", sizeof(char) * 6));
+	if (!cmp("test1", lst->content))
+		test[0] = 0;
+	if (!cmp("test2", lst->next->content))
+		test[1] = 0;
+	free(lst->next->content);
+	free(lst->next);
+	free(lst->content);
+	free(lst);
+	print_test_results(test, ctrl, 2, NULL);
+}
+
+static void	test_lstdel(void)
+{
+	int		test[2], ctrl[2];
+	char	str[]="test string", *ptr1, *ptr2, *ptr3;
+	size_t	n;
+	t_list	*lst1, *lst2, *lst3;
+
+	print_test_name("lstdel");
+	init(ctrl, 2, 0);
+	init(test, 2, 1);
+	n = sizeof(*str) * (strlen(str) + 1);
+#ifdef SEGFAULT_ME
+	ft_lstdel(NULL, &f_del);
+	lst1 = ft_lstnew(str, n);
+	ptr1 = lst1->content;
+	ft_lstdel(&lst1, NULL);
+	free(ptr1);
+	lst1 = NULL;
+	ft_lstdel(&lst1, &f_del);
+#endif
+	lst1 = ft_lstnew(str, n);
+	lst2 = ft_lstnew(str, n);
+	lst3 = ft_lstnew(str, n);
+	lst1->next = lst2;
+	lst2->next = lst3;
+	ptr1 = lst1->content;
+	ptr2 = lst2->content;
+	ptr3 = lst3->content;
+	ft_lstdel(&lst1, &f_del);
+	if (!lst1)
+		test[0] = 0;
+	if (!cmp("aaaaaaaaaaa", ptr1) && !cmp("aaaaaaaaaaa", ptr2) && !cmp("aaaaaaaaaaa", ptr2))
+		test[1] = 0;
+	free(ptr1);
+	free(ptr2);
+	free(ptr3);
+	print_test_results(test, ctrl, 2, NULL);
+}
+
 static void	test_lstdelone(void)
 {
 	int		test[4], ctrl[4];
@@ -579,16 +648,16 @@ static void	test_lstdelone(void)
 	print_test_name("lstdelone");
 	init(ctrl, 4, 0);
 	init(test, 4, 1);
+	n = sizeof(*str) * (strlen(str) + 1);
 #ifdef SEGFAULT_ME
 	ft_lstdelone(NULL, &f_del);
-	lst1 = ft_lstnew(str, sizeof(*str) * (strlen(str) + 1));
+	lst1 = ft_lstnew(str, n);
 	ptr1 = lst1->content;
 	ft_lstdelone(&lst1, NULL);
 	free(ptr1);
 	lst1 = NULL;
 	ft_lstdelone(&lst1, &f_del);
 #endif
-	n = sizeof(*str) * (strlen(str) + 1);
 	lst1 = ft_lstnew(str, n);
 	lst2 = ft_lstnew(str, n);
 	lst1->next = lst2;
@@ -1757,7 +1826,9 @@ int			main(void)
 	test_isprint();
 //	test_isspace(); /* not required */
 	test_itoa();
+	test_lstadd();
 	test_lstnew();
+	test_lstdel();
 	test_lstdelone();
 	test_memalloc();
 	test_memccpy();
