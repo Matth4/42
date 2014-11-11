@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 21:55:24 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 23:30:26 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -498,8 +498,8 @@ static void	test_itoa(void)
 	char	str1[21], *str2;
 
 	print_test_name("itoa");
-	init(ctrl, 5, 0);
-	init(test, 5, 1);
+	init(ctrl, 7, 0);
+	init(test, 7, 1);
 	snprintf(str1, 21, "%d", 0);
 	str2 = ft_itoa(0);
 	test[0] = cmp(str1, str2);
@@ -795,6 +795,8 @@ static void	test_memccpy(void)
 	print_test_name("memccpy");
 	init(ctrl, 6, 0);
 	init(test, 6, 1);
+	src1[0] = '\0';
+	src2[0] = '\0';
 	ptr1 = memccpy(dst1, src1, '0', 4);
 	ptr2 = ft_memccpy(dst2, src2, '0', 4);
 	test[0] = memcmp(dst1, dst2, 27);
@@ -849,7 +851,7 @@ static void	test_memchr(void)
 
 static void	test_memcmp(void)
 {
-	int		test[3], ctrl[3];
+	int		test[4], ctrl[4];
 	char	str1[]="test string", str2[]="test spring";
 
 	print_test_name("memcmp");
@@ -859,7 +861,13 @@ static void	test_memcmp(void)
 	ctrl[1] = ft_memcmp(str1, str2, 6);
 	test[2] = memcmp("a", "b", 0);
 	ctrl[2] = ft_memcmp("a", "b", 0);
-	print_test_results(test, ctrl, 3, NULL);
+	str1[1] = '\0';
+	str2[1] = '\0';
+	str1[2] = 'a';
+	str2[2] = 'b';
+	test[3] = memcmp(str1, str2, 3);
+	ctrl[3] = ft_memcmp(str1, str2, 3);
+	print_test_results(test, ctrl, 4, NULL);
 }
 
 static void	test_memcpy(void)
@@ -917,23 +925,28 @@ static void	test_memdel(void)
 
 static void	test_memmove(void)
 {
-	int		test[4], ctrl[4];
+	int		test[5], ctrl[5];
 	char	str1[]="abcdefghijklmnopqrstuvwxyz", str2[]="abcdefghijklmnopqrstuvwxyz",
 			str3[]="abcdefghijklmnopqrstuvwxyz", str4[]="abcdefghijklmnopqrstuvwxyz",
 			str5[]="abcdefghijklmnopqrstuvwxyz", str6[]="abcdefghijklmnopqrstuvwxyz";
 
 	print_test_name("memmove");
-	init(ctrl, 3, 0);
-	init(test, 3, 1);
+	init(ctrl, 5, 0);
+	init(test, 5, 1);
 	memmove(str1 + 3, str1, 0);
 	ft_memmove(str2 + 3, str2, 0);
 	test[0] = memcmp(str1, str2, 27);
 	memmove(str1 + 3, str1, 8);
 	ft_memmove(str2 + 3, str2, 8);
 	test[1] = memcmp(str1, str2, 27);
-	test[2] = memcmp(memmove(str3, str3 + 5, 8), ft_memmove(str4, str4 + 5, 8), 27);
-	test[3] = memcmp(memmove(str5, str5, 10), ft_memmove(str6, str6, 10), 27);
-	print_test_results(test, ctrl, 4, NULL);
+	str1[2] = '\0';
+	str2[2] = '\0';
+	memmove(str1 + 3, str1, 8);
+	ft_memmove(str2 + 3, str2, 8);
+	test[2] = memcmp(str1, str2, 27);
+	test[3] = memcmp(memmove(str3, str3 + 5, 8), ft_memmove(str4, str4 + 5, 8), 27);
+	test[4] = memcmp(memmove(str5, str5, 10), ft_memmove(str6, str6, 10), 27);
+	print_test_results(test, ctrl, 5, NULL);
 }
 
 static void	test_memset(void)
@@ -945,6 +958,8 @@ static void	test_memset(void)
 	print_test_name("memset");
 	init(ctrl, 4, 0);
 	init(test, 4, 1);
+	str1[3] = '\0';
+	str2[3] = '\0';
 	test[0] = memcmp(memset(str1, '-', 0), ft_memset(str2, '-', 0), 15);
 	test[1] = memcmp(memset(str1, '-', 1), ft_memset(str2, '-', 1), 15);
 	test[2] = memcmp(memset(str1, '-', 5), ft_memset(str2, '-', 5), 15);
