@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 02:41:59 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 17:26:58 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,11 @@ static char	f_map(char c)
 static char	f_mapi(unsigned int i, char c)
 {
 	return (c + i);
+}
+
+static void	f_del(void *ptr, size_t size)
+{
+	memset(ptr, 'a', size - 1);
 }
 
 static void	init(int tab[], int n, int c)
@@ -505,6 +510,103 @@ static void	test_itoa(void)
 	str2 = ft_itoa(INT_MIN);
 	test[6] = cmp(str1, str2);
 	print_test_results(test, ctrl, 7, NULL);
+}
+
+static void	test_lstnew(void)
+{
+	int		test[11], ctrl[11], warning[]={8, -1};
+	char	str[]="test string";
+	t_list	*lst;
+
+	print_test_name("lstnew");
+	init(ctrl, 11, 0);
+	init(test, 11, 1);
+	lst = ft_lstnew(str, sizeof(*str) * (strlen(str) + 1));
+	if (lst)
+	{
+		test[0] = cmp(str, lst->content);
+		if (str != lst->content)
+			test[1] = 0;
+		if (lst->content_size == sizeof(*str) * (strlen(str) + 1))
+			test[2] = 0;
+		if (!lst->next)
+			test[3] = 0;
+		free(lst->content);
+		free(lst);
+	}
+	lst = ft_lstnew(NULL, 10);
+	if (lst)
+	{
+		if (!lst->content)
+			test[4] = 0;
+		if (lst->content_size == 0)
+			test[5] = 0;
+		if (!lst->next)
+			test[6] = 0;
+		free(lst->content);
+		free(lst);
+	}
+	lst = ft_lstnew(str, SIZE_MAX);
+	if (!lst)
+		test[7] = 0;
+	else
+	{
+		free(lst->content);
+		free(lst);
+	}
+	lst = ft_lstnew(str, 0);
+	if (lst)
+	{
+		if (!lst->content)
+			test[8] = 0;
+		if (lst->content_size == 0)
+			test[9] = 0;
+		if (!lst->next)
+			test[10] = 0;
+		free(lst->content);
+		free(lst);
+	}
+	print_test_results(test, ctrl, 11, warning);
+}
+
+static void	test_lstdelone(void)
+{
+	int		test[4], ctrl[4];
+	char	str[]="test string", *ptr1, *ptr2;
+	size_t	n;
+	t_list	*lst1, *lst2;
+
+	print_test_name("lstdelone");
+	init(ctrl, 4, 0);
+	init(test, 4, 1);
+#ifdef SEGFAULT_ME
+	ft_lstdelone(NULL, &f_del);
+	lst1 = ft_lstnew(str, sizeof(*str) * (strlen(str) + 1));
+	ptr1 = lst1->content;
+	ft_lstdelone(&lst1, NULL);
+	free(ptr1);
+	lst1 = NULL;
+	ft_lstdelone(&lst1, &f_del);
+#endif
+	n = sizeof(*str) * (strlen(str) + 1);
+	lst1 = ft_lstnew(str, n);
+	lst2 = ft_lstnew(str, n);
+	lst1->next = lst2;
+	ptr1 = lst1->content;
+	ptr2 = lst2->content;
+	ft_lstdelone(&lst1, &f_del);
+	if (!lst1)
+		test[0] = 0;
+	if (lst2->content == ptr2 && lst2->content_size == n && !lst2->next)
+		test[1] = 0;
+	if (!cmp("aaaaaaaaaaa", ptr1))
+		test[2] = 0;
+	if (!cmp(str, lst2->content))
+		test[3] = 0;
+	free(ptr1);
+	free(ptr2);
+	free(lst2);
+	print_test_results(test, ctrl, 4, NULL);
 }
 
 static void	test_memalloc(void)
@@ -1655,6 +1757,8 @@ int			main(void)
 	test_isprint();
 //	test_isspace(); /* not required */
 	test_itoa();
+	test_lstnew();
+	test_lstdelone();
 	test_memalloc();
 	test_memccpy();
 	test_memchr();
@@ -1697,7 +1801,7 @@ int			main(void)
 	printf(MAGENTA"Love and kisses, Zaphod."UNCOLOR"\n");
 	printf(YELLOW"disagreed"UNCOLOR" results mean the function did not behave like expected but it is not necessarily a fail (I leave that judgement up to you). See comments in the code for more details.\n");
 	printf(YELLOW"disagreed"UNCOLOR" signifie que la fonction ne s'est pas comportée comme prévu, mais que cela n'est pas forcément un fail (c'est à vous de décider). Référez vous aux commentaires dans le code pour plus de détails.\n");
-	printf(RED"WARNING:"UNCOLOR" If you're using this test for correction/gradation purposes, __please__ check out the code for the tests that failed before sacking another student, and try to understand why they failed. I could have made a mistake, or her/his functions could behave unlike mine, yet still be in accordance with the instructions (this is mostly true for the additional functions). This program is not here to correct in your stead.\n");
+	printf(RED"WARNING:"UNCOLOR" If you're using this test for correction/gradation purposes, __please__ check out the code for the tests that failed before sacking another student, and try to understand why they failed. It could be my mistake, or her/his functions could behave unlike mine, yet still be in accordance with the instructions (this is mostly true for the additional functions). This program is not here to correct in your stead.\n");
 	printf(RED"ATTENTION:"UNCOLOR" Si vous utilisez ce test pour corriger un autre élève, __s'il_vous_plait__ vérifiez le code des tests qui ont échoué avant de la/le saquer, et essayerz de comprendre d'où vient le problème. J'ai pu faire une erreur, ou ses fonctions pourraient avoir un comportement différent des miennes, tout en restant en accord avec les instructions (ceci est valable principalement pour les fonctions supplémentaires). Ce programme n'est pas là pour faire la correction à votre place.\n");
 	return (0);
 }
