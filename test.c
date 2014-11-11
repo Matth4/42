@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 02:36:24 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 02:41:59 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 #define UNULINE	"\033[24m"
 
 /* Comment out to remove the NULL tests */
-//#define SEGFAULT_ME
+#define SEGFAULT_ME
 /* If the test segfaults, try skipping the NULL tests */
 /* to see if they are the ones giving you a hard time */
 
@@ -869,10 +869,7 @@ static void	test_strdup(void)
 
 static void	test_strequ(void)
 {
-	int		test[12], ctrl[12];
-#ifdef SEGFAULT_ME
-	int		warning[]={9, -1};
-#endif
+	int		test[12], ctrl[12], warning[]={9, -1};
 	
 	print_test_name("strequ");
 #ifdef SEGFAULT_ME
@@ -905,7 +902,7 @@ static void	test_strequ(void)
 #ifdef SEGFAULT_ME
 	print_test_results(test, ctrl, 12, warning);
 #else
-	print_test_results_summary(test, ctrl, 9);
+	print_test_results(test, ctrl, 9, warning);
 #endif
 }
 
