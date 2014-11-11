@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 18:32:24 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/11 21:55:24 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,24 @@ static char	f_map(char c)
 static char	f_mapi(unsigned int i, char c)
 {
 	return (c + i);
+}
+
+static void	f_liter(t_list *lst)
+{
+	char	*str;
+
+	str = (char *)lst->content;
+	while (*str)
+		++(*str++);
+}
+
+static t_list	*f_lmap(t_list *lst)
+{
+	t_list		*dst;
+
+	dst = ft_lstnew(lst->content, lst->content_size);
+	f_liter(dst);
+	return (dst);
 }
 
 static void	f_del(void *ptr, size_t size)
@@ -512,63 +530,6 @@ static void	test_itoa(void)
 	print_test_results(test, ctrl, 7, NULL);
 }
 
-static void	test_lstnew(void)
-{
-	int		test[11], ctrl[11], warning[]={8, -1};
-	char	str[]="test string";
-	t_list	*lst;
-
-	print_test_name("lstnew");
-	init(ctrl, 11, 0);
-	init(test, 11, 1);
-	lst = ft_lstnew(str, sizeof(*str) * (strlen(str) + 1));
-	if (lst)
-	{
-		test[0] = cmp(str, lst->content);
-		if (str != lst->content)
-			test[1] = 0;
-		if (lst->content_size == sizeof(*str) * (strlen(str) + 1))
-			test[2] = 0;
-		if (!lst->next)
-			test[3] = 0;
-		free(lst->content);
-		free(lst);
-	}
-	lst = ft_lstnew(NULL, 10);
-	if (lst)
-	{
-		if (!lst->content)
-			test[4] = 0;
-		if (lst->content_size == 0)
-			test[5] = 0;
-		if (!lst->next)
-			test[6] = 0;
-		free(lst->content);
-		free(lst);
-	}
-	lst = ft_lstnew(str, SIZE_MAX);
-	if (!lst)
-		test[7] = 0;
-	else
-	{
-		free(lst->content);
-		free(lst);
-	}
-	lst = ft_lstnew(str, 0);
-	if (lst)
-	{
-		if (!lst->content)
-			test[8] = 0;
-		if (lst->content_size == 0)
-			test[9] = 0;
-		if (!lst->next)
-			test[10] = 0;
-		free(lst->content);
-		free(lst);
-	}
-	print_test_results(test, ctrl, 11, warning);
-}
-
 static void	test_lstadd(void)
 {
 	int		test[2], ctrl[2];
@@ -676,6 +637,126 @@ static void	test_lstdelone(void)
 	free(ptr2);
 	free(lst2);
 	print_test_results(test, ctrl, 4, NULL);
+}
+
+static void	test_lstiter(void)
+{
+	int		test[1], ctrl[1];
+	t_list	*lst;
+
+	print_test_name("lstiter");
+	init(ctrl, 1, 0);
+	init(test, 1, 1);
+#ifdef SEGFAULT_ME
+	ft_lstiter(NULL, &f_liter);
+	lst = ft_lstnew("test string", sizeof(char) * 12);
+	ft_lstiter(lst, NULL);
+	free(lst->content);
+	free(lst);
+	ft_lstiter(NULL, NULL);
+#endif
+	lst = NULL;
+	ft_lstadd(&lst, ft_lstnew("test3", 5));
+	ft_lstadd(&lst, ft_lstnew("test2", 5));
+	ft_lstadd(&lst, ft_lstnew("test1", 5));
+	ft_lstiter(lst, &f_liter);
+	ft_lstiter(lst, &f_liter);
+	if (!cmp((char *)lst->content, "vguv3")
+		&& !cmp((char *)lst->next->content, "vguv4")
+		&& !cmp((char *)lst->next->next->content, "vguv5"))
+		test[0] = 0;
+	print_test_results(test, ctrl, 1, NULL);
+}
+
+static void	test_lstmap(void)
+{
+	int		test[3], ctrl[3];
+	t_list	*lst1, *lst2;
+
+	print_test_name("lstmap");
+	init(ctrl, 3, 0);
+	init(test, 3, 1);
+#ifdef SEGFAULT_ME
+	ft_lstmap(NULL, &f_lmap);
+	lst1 = ft_lstnew("test string", sizeof(char) * 12);
+	ft_lstmap(lst1, NULL);
+	free(lst1->content);
+	free(lst1);
+	ft_lstmap(NULL, NULL);
+#endif
+	lst1 = NULL;
+	ft_lstadd(&lst1, ft_lstnew("test3", 5));
+	ft_lstadd(&lst1, ft_lstnew("test2", 5));
+	ft_lstadd(&lst1, ft_lstnew("test1", 5));
+	lst2 = ft_lstmap(lst1, &f_lmap);
+	if (!cmp((char *)lst2->content, "uftu2")
+		&& !cmp((char *)lst2->next->content, "uftu3")
+		&& !cmp((char *)lst2->next->next->content, "uftu4"))
+		test[0] = 0;
+	if (lst2->content_size == 5
+		&& lst2->next->content_size == 5
+		&& lst2->next->next->content_size == 5)
+		test[1] = 0;
+	if (!lst2->next->next->next)
+		test[2] = 0;
+	print_test_results(test, ctrl, 3, NULL);
+}
+
+static void	test_lstnew(void)
+{
+	int		test[11], ctrl[11], warning[]={8, -1};
+	char	str[]="test string";
+	t_list	*lst;
+
+	print_test_name("lstnew");
+	init(ctrl, 11, 0);
+	init(test, 11, 1);
+	lst = ft_lstnew(str, sizeof(*str) * (strlen(str) + 1));
+	if (lst)
+	{
+		test[0] = cmp(str, lst->content);
+		if (str != lst->content)
+			test[1] = 0;
+		if (lst->content_size == sizeof(*str) * (strlen(str) + 1))
+			test[2] = 0;
+		if (!lst->next)
+			test[3] = 0;
+		free(lst->content);
+		free(lst);
+	}
+	lst = ft_lstnew(NULL, 10);
+	if (lst)
+	{
+		if (!lst->content)
+			test[4] = 0;
+		if (lst->content_size == 0)
+			test[5] = 0;
+		if (!lst->next)
+			test[6] = 0;
+		free(lst->content);
+		free(lst);
+	}
+	lst = ft_lstnew(str, SIZE_MAX);
+	if (!lst)
+		test[7] = 0;
+	else
+	{
+		free(lst->content);
+		free(lst);
+	}
+	lst = ft_lstnew(str, 0);
+	if (lst)
+	{
+		if (!lst->content)
+			test[8] = 0;
+		if (lst->content_size == 0)
+			test[9] = 0;
+		if (!lst->next)
+			test[10] = 0;
+		free(lst->content);
+		free(lst);
+	}
+	print_test_results(test, ctrl, 11, warning);
 }
 
 static void	test_memalloc(void)
@@ -1827,9 +1908,11 @@ int			main(void)
 //	test_isspace(); /* not required */
 	test_itoa();
 	test_lstadd();
-	test_lstnew();
 	test_lstdel();
 	test_lstdelone();
+	test_lstiter();
+	test_lstmap();
+	test_lstnew();
 	test_memalloc();
 	test_memccpy();
 	test_memchr();
