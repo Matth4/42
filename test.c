@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/11 23:30:26 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/12 12:53:24 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1436,7 +1436,7 @@ static void	test_strncat(void)
 
 static void	test_strncmp(void)
 {
-	int		test[13], ctrl[13];
+	int		test[14], ctrl[14];
 
 	/*                  /!\ strcmp and strncmp                               */
 	/* ********************************************************************* */
@@ -1464,6 +1464,7 @@ static void	test_strncmp(void)
 	ctrl[10] = ncmp("", "", 2);
 	ctrl[11] = ncmp("\200\230\100\255", "\200\230\100\255", 5);
 	ctrl[12] = ncmp("\200\230\100\255", "\200\0\100\255", 5);
+	ctrl[13] = ncmp("", "a", 1);
 	test[0] = ft_ncmp("test string", "test string", 0);
 	test[1] = ft_ncmp("test string", "test string", 30);
 	test[2] = ft_ncmp("test string", "test spring", 6);
@@ -1477,8 +1478,9 @@ static void	test_strncmp(void)
 	test[10] = ft_ncmp("", "", 2);
 	test[11] = ft_ncmp("\200\230\100\255", "\200\230\100\255", 5);
 	test[12] = ft_ncmp("\200\230\100\255", "\200\0\100\255", 5);
-	test_sign(test, ctrl, 13);
-	print_test_results_summary(test, ctrl, 13);
+	test[13] = ft_ncmp("", "a", 1);
+	test_sign(test, ctrl, 14);
+	print_test_results_summary(test, ctrl, 14);
 }
 
 static void	test_strncpy(void)
