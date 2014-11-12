@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/12 12:53:24 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/12 13:36:23 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1518,9 +1518,9 @@ static void	test_strnequ(void)
 	ctrl[13] = 0;
 	ctrl[14] = 0;
 	ctrl[15] = 0;
-	test[13] = ft_strequ(NULL, NULL);
-	test[14] = ft_strequ("test", NULL);
-	test[15] = ft_strequ(NULL, "test");
+	test[13] = ft_strnequ(NULL, NULL, 5);
+	test[14] = ft_strnequ("test", NULL, 5);
+	test[15] = ft_strnequ(NULL, "test", 5);
 #endif
 	ctrl[0] = ncmp("test string", "test string", 0);
 	ctrl[1] = ncmp("test string", "test string", 30);
