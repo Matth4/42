@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/12 14:55:18 by darresti         ###   ########.fr       */
+/*   Updated: 2014/11/26 17:55:43 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -851,7 +851,7 @@ static void	test_memchr(void)
 
 static void	test_memcmp(void)
 {
-	int		test[4], ctrl[4];
+	int		test[5], ctrl[5];
 	char	str1[]="test string", str2[]="test spring";
 
 	print_test_name("memcmp");
@@ -867,7 +867,10 @@ static void	test_memcmp(void)
 	str2[2] = 'b';
 	test[3] = memcmp(str1, str2, 3);
 	ctrl[3] = ft_memcmp(str1, str2, 3);
-	print_test_results(test, ctrl, 4, NULL);
+	str1[1] = '\200';
+	test[4] = memcmp(str1, str2, 2);
+	ctrl[4] = ft_memcmp(str1, str2, 2);
+	print_test_results(test, ctrl, 5, NULL);
 }
 
 static void	test_memcpy(void)
