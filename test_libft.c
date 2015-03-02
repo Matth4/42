@@ -6,7 +6,7 @@
 /*   By: darresti <darresti@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/11/04 19:30:29 by darresti          #+#    #+#             */
-/*   Updated: 2014/11/26 17:55:43 by darresti         ###   ########.fr       */
+/*   Updated: 2015/03/02 17:34:47 by darresti         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -591,7 +591,7 @@ static void	test_lstdel(void)
 	ft_lstdel(&lst1, &f_del);
 	if (!lst1)
 		test[0] = 0;
-	if (!cmp("aaaaaaaaaaa", ptr1) && !cmp("aaaaaaaaaaa", ptr2) && !cmp("aaaaaaaaaaa", ptr2))
+	if (!cmp("aaaaaaaaaaa", ptr1) && !cmp("aaaaaaaaaaa", ptr2) && !cmp("aaaaaaaaaaa", ptr3))
 		test[1] = 0;
 	free(ptr1);
 	free(ptr2);
